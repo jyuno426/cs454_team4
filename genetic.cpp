@@ -44,7 +44,8 @@ void Genetic::crossover(Indiv *indiv1, Indiv *indiv2, Indiv *res1, Indiv *res2) 
 	int i, n = indiv1->size();
 	res1->resize(n), res2->resize(n);
 
-	for (i = 0; i <= random_int(n - 1); i++) {
+	int point = random_int(n - 1);
+	for (i = 0; i <= point; i++) {
 		res1->at(i) = new Edge(indiv1->at(i));
 		res2->at(i) = new Edge(indiv2->at(i));
 	}
