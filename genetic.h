@@ -1,5 +1,5 @@
-#ifndef _GENETIC
-#define _GENETIC
+#ifndef _GENETIC_
+#define _GENETIC_
 
 #include <bits/stdc++.h>
 using namespace std;

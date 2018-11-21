@@ -37,6 +37,7 @@ Genetic::Genetic(int _V, int _E, int _C) {
 	V = _V, E = _E, C = _C;
 }
 void Genetic::crossover(Indiv *indiv1, Indiv *indiv2, Indiv *res1, Indiv *res2) {
+	// example code: single-point crossover
 	assert(indiv1->size() > 0);
 	assert(indiv1->size() == indiv2->size());
 
@@ -54,8 +55,9 @@ void Genetic::crossover(Indiv *indiv1, Indiv *indiv2, Indiv *res1, Indiv *res2) 
 	}
 }
 void Genetic::mutation(Indiv *indiv, Indiv *res) {
-
+	// do something
 }
 int Genetic::fitness(Indiv *a) {
+	// do something
 	return 0;
 }
