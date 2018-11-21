@@ -1,0 +1,4 @@
+# VS2017
+*.vcxproj
+*.filters
+*.user
