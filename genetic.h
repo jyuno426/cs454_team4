@@ -23,7 +23,11 @@ public:
 	int size();
 	void resize(int);
 	Edge *&at(int);
+	
+	int V, E, C;
 };
+
+enum SolverType { dinic, ec, ff };
 
 class Genetic {
 private:
@@ -35,6 +39,7 @@ public:
 	Genetic();
 	Genetic(int, int, int);
 
+	SolverType S;
 	int V, E, C;
 };
 
