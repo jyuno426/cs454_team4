@@ -6,7 +6,7 @@ using namespace std;
 
 class Solver{
 public:
-	virtual long long fitness(Indiv) = 0;
+	virtual long long match(Indiv) = 0;
 };
 
 #endif
