@@ -3,6 +3,7 @@
 
 #include "algo/dinic.h"
 #include "algo/edmondsKarp.h"
+#include "algo/fordFulkerson.h"
 
 /* -------- Edge --------*/
 Edge::Edge() {}
@@ -71,12 +72,10 @@ int Genetic::fitness(Indiv *a) {
 		return d.match(0, V-1);
 	}
 
-/*
 	if(S == FF){
-		 d(a, V);
+		FordFulkerson d(a, V);
 		return d.match(0, V-1);
 	}
-*/
 
 	return 0;
 }
