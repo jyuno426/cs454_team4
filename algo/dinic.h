@@ -1,7 +1,7 @@
-#ifndef _GENETIC_
-#define _GENETIC_
+#ifndef _DINIC_
+#define _DINIC_
 
-#include "genetic.h"
+#include "../genetic.h"
 
 class Dinic {
 private:
@@ -16,3 +16,5 @@ public:
 	int dfs(int, int, int);
 	long long match(int, int);
 };
+
+#endif
