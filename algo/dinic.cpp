@@ -1,40 +1,6 @@
 #include "dinic.h"
 
-/*
-#include <bits/stdc++.h>
-using namespace std;
-
-struct Edge{
-	int s, t, c;
-	Edge(int x, int y, int z){
-		s = x; t = y; c = z;
-	}
-};
-
-class Indiv{
-public:
-	vector<Edge *> gene;
-	Indiv() { gene.clear(); }
-};
-
-class Dinic {
-private:
-	vector< vector<Edge> > graph;
-	vector< int > dist;
-	vector< int > pnt;
-	int V;
-	int edgeCount;
-public:
-	Dinic(Indiv *, int);
-	bool bfs(int, int);
-	int dfs(int, int, int);
-	long long match(int, int);
-};
-*/
-
 /* -------- Dinic --------*/
-
-
 Dinic::Dinic(Indiv *indiv, int _V) {
 	V = _V;
 	graph.resize(V);
@@ -81,6 +47,7 @@ int Dinic::dfs(int x, int sink, int f) {
 			}
 		}
 	}
+	return 0;
 }
 
 long long Dinic::match(int src, int sink) {
@@ -92,28 +59,3 @@ long long Dinic::match(int src, int sink) {
 	}
 	return totalFlow;
 }
-
-/*
-int main(){
-	int tt;
-	scanf("%d", &tt);
-	while(tt--){
-		int n, m;
-		scanf("%d%d", &n, &m);
-		Indiv indiv = Indiv();
-		for(int i=0;i<m;i++){
-			int x, y;
-			scanf("%d%d", &x, &y);
-			x++; y++;
-			indiv.gene.push_back(new Edge(x, y+n, 1));
-		}
-		for(int i=1;i<=n;i++){
-			indiv.gene.push_back(new Edge(0, i, 1));
-			indiv.gene.push_back(new Edge(i+n, n+n+1, 1));
-		}
-		Dinic dn(&indiv, 2*n+2);
-		long long ret = dn.match(0, 2*n+1);
-		printf("%lld\n", ret);
-	}
-}
-*/
