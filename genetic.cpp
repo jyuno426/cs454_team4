@@ -2,6 +2,7 @@
 #include "genetic.h"
 
 #include "algo/dinic.h"
+#include "algo/edmondsKarp.h"
 
 /* -------- Edge --------*/
 Edge::Edge() {}
@@ -64,6 +65,18 @@ int Genetic::fitness(Indiv *a) {
 		Dinic d(a, V);
 		return d.match(0, V-1);
 	}
+
+	if(S == EC){
+		EdmondsKarp d(a, V);
+		return d.match(0, V-1);
+	}
+
+/*
+	if(S == FF){
+		 d(a, V);
+		return d.match(0, V-1);
+	}
+*/
 
 	return 0;
 }
