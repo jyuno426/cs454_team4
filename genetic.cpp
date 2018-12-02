@@ -1,9 +1,6 @@
 #include "utils.h"
 #include "genetic.h"
 
-#include "algo/dinic.h"
-#include "algo/edmondsKarp.h"
-#include "algo/fordFulkerson.h"
 
 /* -------- Edge --------*/
 Edge::Edge() {}
@@ -62,20 +59,6 @@ void Genetic::mutation(Indiv *indiv, Indiv *res) {
 	// do something
 }
 int Genetic::fitness(Indiv *a) {
-	if(S == DINIC){
-		Dinic d(a, V);
-		return d.match(0, V-1);
-	}
-
-	if(S == EC){
-		EdmondsKarp d(a, V);
-		return d.match(0, V-1);
-	}
-
-	if(S == FF){
-		FordFulkerson d(a, V);
-		return d.match(0, V-1);
-	}
-
+	// do something
 	return 0;
 }
