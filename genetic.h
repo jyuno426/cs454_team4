@@ -14,8 +14,6 @@ public:
 };
 
 class Indiv {
-private:
-	vector<Edge *> gene;
 public:
 	Indiv();
 	Indiv(int);
@@ -23,7 +21,12 @@ public:
 	int size();
 	void resize(int);
 	Edge *&at(int);
+	
+	vector<Edge *> gene;
+	int V, E, C;
 };
+
+enum SolverType { DINIC, EC, FF };
 
 class Genetic {
 private:
@@ -35,6 +38,7 @@ public:
 	Genetic();
 	Genetic(int, int, int);
 
+	SolverType S;
 	int V, E, C;
 };
 
