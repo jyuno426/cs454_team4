@@ -8,7 +8,6 @@ class Edge {
 public:
 	Edge();
 	Edge(Edge *);
-	Edge(int, int);
 	Edge(int, int, int);
 
 	int s, t, c;
@@ -17,29 +16,33 @@ public:
 class Indiv {
 public:
 	Indiv();
-	Indiv(int);
+	Indiv(int n);
 	~Indiv();
-	int size();
-	void resize(int);
-	Edge *&at(int);
 	
 	vector<Edge *> gene;
-	int V, E, C;
 };
 
 enum SolverType { DINIC, EC, FF };
+enum GraphType { ANY, AC };
+enum CrossoverType { SPC, TPCS };
+const int populationSize = 100;
 
-class Genetic {
-private:
-	vector<Indiv *> population;
-	void crossover(Indiv *, Indiv *, Indiv *, Indiv *);
-	void mutation(Indiv *, Indiv *);
-	int fitness(Indiv *);
+class Generation {
 public:
-	Genetic();
-	Genetic(int, int, int);
+	Generation();
+	~Generation();
+	Generation(int, int, int, SolverType, GraphType, CrossoverType);
+
+	vector<Indiv *> population;
+	pair<Indiv *, Indiv *> crossover(Indiv *, Indiv *);
+	Indiv *mutation(Indiv *);
+	Indiv *sizeManipulation(Indiv *, int, int);
+	long long fitness(Indiv *);
 
 	SolverType S;
+	GraphType G;
+	CrossoverType CO;
+
 	int V, E, C;
 };
 
