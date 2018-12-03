@@ -8,6 +8,7 @@ class Edge {
 public:
 	Edge();
 	Edge(Edge *);
+	Edge(int, int);
 	Edge(int, int, int);
 
 	int s, t, c;

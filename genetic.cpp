@@ -10,6 +10,12 @@ Edge::Edge() {}
 Edge::Edge(Edge *edge) {
 	s = edge->s, t = edge->t, c = edge->c;
 }
+Edge::Edge(int V, int C) {
+	// construct random edge with V vertices and maximum capacity C
+	s = randomInt(0, V - 2);
+	t = randomInt(s + 1, V - 1);
+	c = randomInt(1, C);
+}
 Edge::Edge(int _s, int _t, int _c) {
 	s = _s, t = _t, c = _c;
 }
@@ -40,26 +46,36 @@ Genetic::Genetic(int _V, int _E, int _C) {
 	V = _V, E = _E, C = _C;
 }
 void Genetic::crossover(Indiv *indiv1, Indiv *indiv2, Indiv *res1, Indiv *res2) {
-	// example code: single-point crossover
+	// single-point crossover
 	assert(indiv1->size() > 0);
 	assert(indiv1->size() == indiv2->size());
-
+	
 	int i, n = indiv1->size();
-	res1->resize(n), res2->resize(n);
+	int point = random_int(0, n - 1);
 
-	int point = random_int(n - 1);
+	res1->resize(n), res2->resize(n);
 	for (i = 0; i <= point; i++) {
 		res1->at(i) = new Edge(indiv1->at(i));
 		res2->at(i) = new Edge(indiv2->at(i));
 	}
-
 	for (; i < n; i++) {
 		res1->at(i) = new Edge(indiv2->at(i));
 		res2->at(i) = new Edge(indiv1->at(i));
 	}
 }
 void Genetic::mutation(Indiv *indiv, Indiv *res) {
-	// do something
+	assert(indiv->size() > 0);
+
+	int i, n = indiv->size();
+	int mutant = random_int(0, n - 1);
+
+	res->resize(n);
+	for (i = 0; i < n; i++) {
+		if (i == mutant)
+			res->at(i) = new Edge(V, C);
+		else
+			res->at(i) = new Edge(indiv->at(i));
+	}
 }
 int Genetic::fitness(Indiv *a) {
 	if(S == DINIC){

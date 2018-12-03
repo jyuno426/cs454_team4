@@ -16,8 +16,8 @@ double random_real(double s, double e) {
 	return dis(gen);
 }
 
-/* pick random integer in [0, m) uniformly */
-int random_int(int m) {
-    uniform_int_distribution<int> dis(0, m - 1);
+/* pick random integer in [s, e] uniformly */
+int random_int(int s, int e) {
+    uniform_int_distribution<int> dis(s, e);
 	return dis(gen);
 }
