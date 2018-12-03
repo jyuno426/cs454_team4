@@ -7,6 +7,9 @@ Dinic::Dinic(Indiv *indiv, int _V) {
 	dist.resize(V);
 	pnt.resize(V);
 
+	if(indiv->gene.empty())
+		return;
+
 	vector<Edge> edges;
 	for(auto &e: indiv->gene)
 		edges.push_back({ e->s, e->t, e->c });

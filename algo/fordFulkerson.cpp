@@ -6,6 +6,9 @@ FordFulkerson::FordFulkerson(Indiv *indiv, int _V) {
 	graph.resize(V);
 	pred.resize(V);
 
+	if(indiv->gene.empty())
+		return;
+
 	vector<Edge> edges;
 	for(auto &e: indiv->gene)
 		edges.push_back({ e->s, e->t, e->c });
