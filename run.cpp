@@ -1,3 +1,10 @@
+#include "genetic.h"
+#include "utils.h"
+
 int main() {
-	// do something
+	util_init();
+
+    // do something
+
+    return 0;
 }
