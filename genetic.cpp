@@ -133,7 +133,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 
 		1. Fit vertex size into V + V_change.
 			1-1. When increasing vertex size,
-					randomly select |V_change| vertices from [0, V-1] and split it into two vertices.
+					randomly select |V_change| distinct vertices from [0, V-1] and split it into two vertices.
 			1-2. When splitting each vertex i,
 					- newly added vertex becomes i+1 and the following vertices become i+2, i+3, ... , V.
 					- all incoming edges (for original i) attach to i / all outgoing edges attach to i+1.
@@ -147,6 +147,10 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 			2-2. When decreasing edge size,
 					delete randomly selected edges.
 	*/
+
+	assert(-(TT.V - 1) < V_change && V_change < TT.V);
+	assert(TT.V + V_change >= 1);
+	assert(TT.E + E_change >= 0);
 
 	int i;
 

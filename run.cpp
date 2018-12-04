@@ -48,22 +48,26 @@ Generation *GA(const TestType TT, const int fitnessLimit) {
 }
 
 Generation *sizeFlexibleGA(Generation *From, const TestType TT, const int fitnessLimit) {
+	Generation *cur = From;
 
-
-
-	return From;
+	// Steps          : sqrt(FL/P)
+	// SizeManip tries: sqrt(FL/P)/2
+	// GA steps       : sqrt(FL/P)/2
 }
 
 void exp1() {
-	fitnessCount = 0;
-	const int fitnessLimit = 500000;
+	const int fitnessLimit = 50000;
 
 	const TestType TT1 = { DINIC, AC, SPC, 100, 5000, 10000 };
+	fitnessCount = 0;
 	Generation *res1 = GA(TT1, fitnessLimit);
 
-	const TestType TT2 = { DINIC, AC, SPC, 200, 10000, 10000 };
+	const TestType TT2 = { DINIC, AC, SPC, 110, 5500, 10000 };
 
+	fitnessCount = 0;
 	Generation *res2 = GA(TT2, fitnessLimit);
+
+	fitnessCount = 0;
 	Generation *res3 = sizeFlexibleGA(res1, TT2, fitnessLimit);
 
 	// Now compare res2 and res3
