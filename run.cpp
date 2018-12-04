@@ -9,7 +9,8 @@ void GA(SolverType S, GraphType G, CrossoverType CO,
 	Generation *cur = new Generation(V, E, C, S, G, CO);
 	cur->randomCreation();
 
-	printf("Fitness: %lld\n", cur->max_fitness());
+	int generation = 0;
+	printf("%d generation: %lld\n", generation, cur->max_fitness());
 
 	while (fitnessCount < fitnessLimit) {
 		Generation *next = new Generation(V, E, C, S, G, CO);
@@ -32,16 +33,16 @@ void GA(SolverType S, GraphType G, CrossoverType CO,
 		next->sort();
 
 		int elitist = populationSize * 0.1 + 1e-7; // 10% from cur population
-		int rest = populationSize - elitist;
+		int top = populationSize - elitist;
 		for (i = 0; i < elitist; i++) {
-			delete next->population[rest + i];
-			next->population[rest + i] = new Indiv(cur->population[i]);
+			delete next->population[i];
+			next->population[i] = new Indiv(cur->population[top + i]);
 		}
 
 		delete cur;
 		cur = next;
 
-		printf("Fitness: %lld\n", cur->max_fitness());
+		printf("%d generation: %lld\n", ++generation, cur->max_fitness());
 	}
 }
 
@@ -62,5 +63,6 @@ int main() {
 	exp1();
 	// exp2();
 
+	system("pause");
     return 0;
 }

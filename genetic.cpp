@@ -8,7 +8,7 @@
 mt19937 gen;
 int fitnessCount;
 bool IndivCompare(Indiv *aa, Indiv *bb) {
-	return aa->fitness > bb->fitness;
+	return aa->fitness < bb->fitness;
 };
 
 /* -------- Edge --------*/
@@ -76,7 +76,6 @@ void Generation::crossover(Indiv *indiv1, Indiv *indiv2) {
 	if (CO == TPCS) {
 
 	}
-	evaluate(indiv1), evaluate(indiv2);
 }
 
 void Generation::mutation(Indiv *indiv) {
