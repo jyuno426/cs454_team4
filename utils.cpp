@@ -1,5 +1,4 @@
 #include "utils.h"
-using namespace std;
 
 mt19937 gen;
 

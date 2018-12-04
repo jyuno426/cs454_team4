@@ -1,6 +1,7 @@
 #ifndef _EDMONDSKARP_
 #define _EDMONDSKARP_
 
+#include "../utils.h"
 #include "../genetic.h"
 
 class EdmondsKarp {

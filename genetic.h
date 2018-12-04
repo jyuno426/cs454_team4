@@ -1,8 +1,7 @@
 #ifndef _GENETIC_
 #define _GENETIC_
 
-#include <bits/stdc++.h>
-using namespace std;
+#include "utils.h"
 
 const int populationSize = 100;
 

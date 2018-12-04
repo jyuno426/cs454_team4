@@ -1,5 +1,5 @@
-#include "genetic.h"
 #include "utils.h"
+#include "genetic.h"
 
 extern int fitnessCount;
 

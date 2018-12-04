@@ -1,3 +1,4 @@
+#include "../utils.h"
 #include "fordFulkerson.h"
 
 /* -------- FordFulkerson -------- */
@@ -41,7 +42,7 @@ int FordFulkerson::dfs(int x, int sink, int f) {
 		return f;
 	}
 	for(auto &e : graph[x]) {
-		//edgeCount++;
+		edgeCount++;
 		if(e.c > 0 && pred[e.t] == -1) {
 			pred[e.t] = e.s;
 			int w = dfs(e.t, sink, min(f, e.c));
@@ -64,9 +65,9 @@ long long FordFulkerson::match(int src, int sink) {
 			pred[i] = -1;
 		}
 		pred[src] = 0;
-		int ret = dfs(src, sink, 2e9);
+		int ret = dfs(src, sink, (int)2e9);
 		totalFlow += ret;
 		if(!ret) break;
 	}
-	return totalFlow;
+	return edgeCount;
 }

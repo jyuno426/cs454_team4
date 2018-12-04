@@ -1,6 +1,7 @@
 #ifndef _FORDFULKERSON_
 #define _FORDFULKERSON_
 
+#include "../utils.h"
 #include "../genetic.h"
 
 class FordFulkerson {

@@ -1,3 +1,4 @@
+#include "../utils.h"
 #include "edmondsKarp.h"
 
 /* -------- EdmondsKarp -------- */
@@ -46,7 +47,7 @@ bool EdmondsKarp::bfs(int src, int sink) {
 	while(!q.empty()) {
 		int s = q.front(); q.pop();
 		for(auto &e : graph[s]) {
-			//edgeCount++;
+			edgeCount++;
 			if(e.c > 0 && pred[e.t] == -1) {
 				pred[e.t] = e.s;
 				q.push(e.t);
@@ -61,14 +62,14 @@ int EdmondsKarp::dfs(int src, int sink) {
 	int f = (int)2e9;
 	int x = sink;
 	while(x != src) {
-		//edgeCount++;
+		edgeCount++;
 		Edge &e = graph[x][pred[x]];
 		f = min(f, graph[e.t][e.s].c);
 		x = e.t;
 	}
 	x = sink;
 	while(x != src) {
-		//edgeCount++;
+		edgeCount++;
 		Edge &e = graph[x][pred[x]];
 		graph[e.t][e.s].c -= f;
 		graph[x][pred[x]].c += f;
@@ -83,5 +84,5 @@ long long EdmondsKarp::match(int src, int sink) {
 	while(bfs(src, sink)) {
 		totalFlow += dfs(src, sink);
 	}
-	return totalFlow;
+	return edgeCount;
 }

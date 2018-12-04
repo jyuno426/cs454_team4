@@ -1,6 +1,7 @@
 #ifndef _DINIC_
 #define _DINIC_
 
+#include "../utils.h"
 #include "../genetic.h"
 
 class Dinic {
