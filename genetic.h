@@ -17,29 +17,37 @@ class Indiv {
 public:
 	Indiv();
 	Indiv(int n);
+	Indiv(Indiv *);
 	~Indiv();
 	
 	vector<Edge *> gene;
+	long long fitness;
 };
 
 enum SolverType { DINIC, EC, FF };
 enum GraphType { ANY, AC };
 enum CrossoverType { SPC, TPCS };
+
 const int populationSize = 100;
 
 class Generation {
 public:
 	Generation();
 	Generation(int, int, int, SolverType, GraphType, CrossoverType);
+	Generation(char *filename);
 	~Generation();
 
-	pair<Indiv *, Indiv *> crossover(Indiv *, Indiv *);
-	Indiv *mutation(Indiv *);
-	long long fitness(Indiv *);
+	void randomCreation();
+	Indiv *reproduct();
+	void crossover(Indiv *, Indiv *);
+	void mutation(Indiv *);
+	void evaluate(Indiv *);
+
+	void sort();
+	long long max_fitness();
+	Edge *randomEdge();
 
 	Indiv *sizeManipulation(Indiv *, int, int);
-
-	Edge *randomEdge();
 
 	SolverType S;
 	GraphType G;

@@ -47,7 +47,7 @@ bool Dinic::bfs(int src, int sink) {
 	while(!q.empty()){
 		int s = q.front(); q.pop();
 		for(auto &e: graph[s]){
-			//edgeCount++;
+			edgeCount++;
 			if(e.c > 0 && !dist[e.t]){
 				dist[e.t] = dist[s] + 1;
 				q.push(e.t);
@@ -60,7 +60,7 @@ bool Dinic::bfs(int src, int sink) {
 int Dinic::dfs(int x, int sink, int f) {
 	if(x == sink) return f;
 	for(; pnt[x] < (int)graph[x].size(); pnt[x]++) {
-		//edgeCount++;
+		edgeCount++;
 		Edge e = graph[x][pnt[x]];
 		if(e.c > 0 && dist[e.t] == dist[x] + 1) {
 			int w = dfs(e.t, sink, min(f, e.c));
@@ -82,5 +82,5 @@ long long Dinic::match(int src, int sink) {
 		int ret;
 		while((ret = dfs(src, sink, 2e9))) totalFlow += ret;
 	}
-	return totalFlow;
+	return edgeCount;
 }

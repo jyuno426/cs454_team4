@@ -6,6 +6,10 @@
 #include "algo/fordFulkerson.h"
 
 mt19937 gen;
+int fitnessCount;
+bool IndivCompare(Indiv *aa, Indiv *bb) {
+	return aa->fitness > bb->fitness;
+};
 
 /* -------- Edge --------*/
 Edge::Edge() {}
@@ -15,73 +19,113 @@ Edge::Edge(int _s, int _t, int _c): s(_s), t(_t), c(_c) {}
 /* -------- Indiv --------*/
 Indiv::Indiv() {}
 Indiv::Indiv(int n) { if (n > 0) gene.resize(n); }
+Indiv::Indiv(Indiv *indiv) {
+	for (auto &e : indiv->gene)
+		gene.push_back(new Edge(e));
+	fitness = indiv->fitness;
+}
 Indiv::~Indiv() { for (auto &e : gene) delete e; }
 
 /* -------- Generation --------*/
 Generation::Generation() {}
 Generation::Generation(int _V, int _E, int _C, SolverType _S, GraphType _G, CrossoverType _CO):
-	V(_V), E(_E), C(_C), S(_S), G(_G), CO(_CO) {
+	V(_V), E(_E), C(_C), S(_S), G(_G), CO(_CO) {}
+Generation::Generation(char *filename) {
+	// read generation from file
+}
+Generation::~Generation() {
+	for (auto &i : population) delete i;
+}
+
+void Generation::randomCreation() {
 	for (int i = 0; i < populationSize; i++) {
 		Indiv *indiv = new Indiv(E);
 		for (int j = 0; j < E; j++)
 			indiv->gene[j] = randomEdge();
+		evaluate(indiv);
 		population.push_back(indiv);
 	}
 }
-Generation::~Generation() { for (auto &i : population) delete i; }
 
-pair<Indiv *, Indiv *> Generation::crossover(Indiv *indiv1, Indiv *indiv2) {
-	Indiv *res1 = new Indiv(E), *res2 = new Indiv(E);
+Indiv *Generation::reproduct() {
+	auto reprod = [&](Indiv *aa, Indiv *bb) {
+		if (aa->fitness > bb->fitness)
+			return random_real(0, 10) < 9 ? aa : bb;
+		else
+			return random_real(0, 10) < 9 ? bb : aa;
+	};
 
-	if (CO == SPC) {
-		int i, point = random_int(0, E - 1);
-		for (i = 0; i <= point; i++) {
-			res1->gene[i] = new Edge(indiv1->gene[i]);
-			res2->gene[i] = new Edge(indiv2->gene[i]);
-		}
-		for (; i < E; i++) {
-			res1->gene[i] = new Edge(indiv2->gene[i]);
-			res2->gene[i] = new Edge(indiv1->gene[i]);
-		}
+	vector<Indiv *> candidates;
+	while (candidates.size() < 8)
+		candidates.push_back(population[random_int(0, populationSize - 1)]);
+	while (candidates.size() > 1) {
+		vector<Indiv *> tmp = candidates;
+		candidates.clear();
+		for (size_t j = 0; j < tmp.size(); j += 2)
+			candidates.push_back(reprod(tmp[j], tmp[j + 1]));
 	}
+	
+	return new Indiv(candidates[0]);
+}
 
+void Generation::crossover(Indiv *indiv1, Indiv *indiv2) {
+	if (CO == SPC) {
+		for (int i = random_int(0, E - 1); i < E; i++)
+			swap(indiv1->gene[i], indiv2->gene[i]);
+	}
 	if (CO == TPCS) {
 
 	}
-
-	return { res1, res2 };
+	evaluate(indiv1), evaluate(indiv2);
 }
 
-Indiv *Generation::mutation(Indiv *indiv) {
-	Indiv *res = new Indiv(E);
-
+void Generation::mutation(Indiv *indiv) {
 	for (int i = 0; i < E; i++) {
-		if (random_real(0, E) < 1)
-			res->gene[i] = randomEdge();
-		else
-			res->gene[i] = new Edge(indiv->gene[i]);
+		if (random_real(0, E) < 1) {
+			delete indiv->gene[i];
+			indiv->gene[i] = randomEdge();
+		}
 	}
-
-	return res;
+	evaluate(indiv);
 }
 
-long long Generation::fitness(Indiv *a) {
+void Generation::evaluate(Indiv *a) {
+	fitnessCount++;
+
+	long long res = 0;
+
 	if (S == DINIC) {
 		Dinic d(a, V);
-		return d.match(0, V - 1);
+		res = d.match(0, V - 1);
 	}
 
 	if (S == EC) {
 		EdmondsKarp d(a, V);
-		return d.match(0, V - 1);
+		res = d.match(0, V - 1);
 	}
 
 	if (S == FF) {
 		FordFulkerson d(a, V);
-		return d.match(0, V - 1);
+		res = d.match(0, V - 1);
 	}
 
-	return 0;
+	a->fitness = res;
+}
+
+void Generation::sort() {
+	std::sort(population.begin(), population.end(), IndivCompare);
+}
+
+long long Generation::max_fitness() {
+	return (**max_element(population.begin(), population.end(), IndivCompare)).fitness;
+}
+
+// construct a random edge according to graph type.
+Edge *Generation::randomEdge() {
+	int s = random_int(0, V - 1);
+	int t = random_int(0, V - 1);
+	if (G == AC && s > t) swap(s, t);
+	return new Edge(s, t, random_int(1, C));
 }
 
 Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
@@ -143,7 +187,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 
 	/* ------------- 2. Fit Edge size ------------ */
 	// edges_added.size() can be larger than E_change
-	while (edges_added.size() < E_change)
+	while ((int)edges_added.size() < E_change)
 		edges_added.push_back(randomEdge());
 	shuffle(edges_added.begin(), edges_added.end(), gen);
 
@@ -162,24 +206,15 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	auto it_kept = edges_kept.begin();
 	for (i = 0; i < E + A; i++) {
 		if (state[i] == 0)
-			res->gene.push_back(*it_kept);
-		if (state[i] == 1)
-			res->gene.push_back(*it_added);
-
-		if (state[i] & 1)
-			it_added++;
+			res->gene.push_back(*(it_kept++));
+		else if (state[i] == 1)
+			res->gene.push_back(*(it_added++));
+		else if (state[i] == 2)
+			delete *(it_kept++);
 		else
-			it_kept++;
+			delete *(it_added++);
 	}
 	/* ------------------------------------------- */
 
 	return res;
-}
-
-// construct a random edge according to graph type.
-Edge *Generation::randomEdge() {
-	int s = random_int(0, V - 1);
-	int t = random_int(0, V - 1);
-	if (G == AC && s > t) swap(s, t);
-	return new Edge(s, t, random_int(1, C));
 }
