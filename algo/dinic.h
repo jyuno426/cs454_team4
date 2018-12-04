@@ -5,9 +5,9 @@
 
 class Dinic {
 private:
-	vector< vector<Edge> > graph;
-	vector< int > dist;
-	vector< int > pnt;
+	vector<vector<Edge>> graph;
+	vector<int> dist;
+	vector<int> pnt;
 	int V;
 	int edgeCount;
 public:

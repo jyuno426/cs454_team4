@@ -12,20 +12,20 @@ void GA(SolverType S, GraphType G, CrossoverType CO,
 	int generation = 0;
 	printf("%d generation: %lld\n", generation, cur->max_fitness());
 
-	while (fitnessCount < fitnessLimit) {
+	while(fitnessCount < fitnessLimit) {
 		Generation *next = new Generation(V, E, C, S, G, CO);
 
 		int i;
 		// reproduction
-		for (i = 0; i < populationSize; i++)
+		for(i = 0; i < populationSize; i++)
 			next->population.push_back(cur->reproduct());
 
 		// crossover
-		for (i = 0; i < populationSize; i += 2)
+		for(i = 0; i < populationSize; i += 2)
 			cur->crossover(next->population[i], next->population[i + 1]);
 
 		// mutation
-		for (i = 0; i < populationSize; i++)
+		for(i = 0; i < populationSize; i++)
 			cur->mutation(next->population[i]);
 
 		// survival
@@ -34,7 +34,7 @@ void GA(SolverType S, GraphType G, CrossoverType CO,
 
 		int elitist = populationSize * 0.1 + 1e-7; // 10% from cur population
 		int top = populationSize - elitist;
-		for (i = 0; i < elitist; i++) {
+		for(i = 0; i < elitist; i++) {
 			delete next->population[i];
 			next->population[i] = new Indiv(cur->population[top + i]);
 		}
@@ -64,5 +64,5 @@ int main() {
 	// exp2();
 
 	system("pause");
-    return 0;
+	return 0;
 }

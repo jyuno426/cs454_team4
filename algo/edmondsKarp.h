@@ -5,7 +5,7 @@
 
 class EdmondsKarp {
 private:
-	vector< vector<Edge> > graph;
+	vector<vector<Edge>> graph;
 	vector<int> pred;
 	int V;
 	int edgeCount;

@@ -19,7 +19,7 @@ public:
 	Indiv(int n);
 	Indiv(Indiv *);
 	~Indiv();
-	
+
 	vector<Edge *> gene;
 	long long fitness;
 };
