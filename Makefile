@@ -3,7 +3,7 @@ SOURCE := $(wildcard *.cpp algo/*.cpp)
 TARGET := run
 
 $(TARGET): $(SOURCE)
-	$(CC) -std=c++11 $(SOURCE) -o $(TARGET)
+	$(CC) -std=c++14 -O2 -Wall $(SOURCE) -o $(TARGET)
 
 clean:
 	rm -rf $(TARGET)

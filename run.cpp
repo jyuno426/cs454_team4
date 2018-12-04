@@ -3,17 +3,15 @@
 
 extern int fitnessCount;
 
-void GA(SolverType S, GraphType G, CrossoverType CO,
-	int V, int E, int C, const int fitnessLimit) {
-
-	Generation *cur = new Generation(V, E, C, S, G, CO);
+Generation *GA(const TestType TT, const int fitnessLimit) {
+	Generation *cur = new Generation(TT);
 	cur->randomCreation();
 
 	int generation = 0;
-	printf("%d generation: %lld\n", generation, cur->max_fitness());
+	fprintf(stderr, "%d generation: %lld\n", generation, cur->max_fitness());
 
 	while(fitnessCount < fitnessLimit) {
-		Generation *next = new Generation(V, E, C, S, G, CO);
+		Generation *next = new Generation(TT);
 
 		int i;
 		// reproduction
@@ -32,7 +30,7 @@ void GA(SolverType S, GraphType G, CrossoverType CO,
 		cur->sort();
 		next->sort();
 
-		int elitist = populationSize * 0.1 + 1e-7; // 10% from cur population
+		int elitist = max(1, populationSize / 10); // 10% from cur population
 		int top = populationSize - elitist;
 		for(i = 0; i < elitist; i++) {
 			delete next->population[i];
@@ -42,27 +40,39 @@ void GA(SolverType S, GraphType G, CrossoverType CO,
 		delete cur;
 		cur = next;
 
-		printf("%d generation: %lld\n", ++generation, cur->max_fitness());
+		fprintf(stderr, "%d generation: %lld\n", ++generation, cur->max_fitness());
 	}
+
+	cur->sort();
+	return cur;
 }
 
-void sizeFlexibleGA(SolverType S, GraphType G, CrossoverType CO,
-	/*, char *filename,*/ // initial population
-	int V_from, int E_from, int C_from, int V_to, int E_to, int C_to) {
-	Generation *cur, *next;
+Generation *sizeFlexibleGA(Generation *From, const TestType TT, const int fitnessLimit) {
+
+
+
+	return From;
 }
 
 void exp1() {
 	fitnessCount = 0;
 	const int fitnessLimit = 500000;
-	GA(DINIC, AC, SPC, 100, 5000, 10000, fitnessLimit);
+
+	const TestType TT1 = { DINIC, AC, SPC, 100, 5000, 10000 };
+	Generation *res1 = GA(TT1, fitnessLimit);
+
+	const TestType TT2 = { DINIC, AC, SPC, 200, 10000, 10000 };
+
+	Generation *res2 = GA(TT2, fitnessLimit);
+	Generation *res3 = sizeFlexibleGA(res1, TT2, fitnessLimit);
+
+	// Now compare res2 and res3
 }
 
 int main() {
 	util_init();
-	exp1();
-	// exp2();
 
-	system("pause");
+	exp1();
+
 	return 0;
 }

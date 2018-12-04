@@ -5,7 +5,7 @@ mt19937 gen;
 
 /* initialization */
 void util_init() {
-	gen.seed(chrono::high_resolution_clock::now().time_since_epoch().count());
+	gen.seed((unsigned int)chrono::high_resolution_clock::now().time_since_epoch().count());
 }
 
 /* pick random real number in (s, e) uniformly */

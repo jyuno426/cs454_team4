@@ -4,11 +4,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+const int populationSize = 100;
+
+enum SolverType { DINIC, EC, FF };
+enum GraphType { ANY, AC };
+enum CrossoverType { SPC, TPCS };
+
+struct TestType {
+	SolverType ST;
+	GraphType GT;
+	CrossoverType CT;
+	int V, E, C;
+
+	TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C);
+};
+
 class Edge {
 public:
 	Edge();
-	Edge(Edge *);
-	Edge(int, int, int);
+	Edge(Edge *e);
+	Edge(int s, int t, int c);
 
 	int s, t, c;
 };
@@ -17,43 +32,32 @@ class Indiv {
 public:
 	Indiv();
 	Indiv(int n);
-	Indiv(Indiv *);
+	Indiv(Indiv *indiv);
 	~Indiv();
 
 	vector<Edge *> gene;
 	long long fitness;
 };
 
-enum SolverType { DINIC, EC, FF };
-enum GraphType { ANY, AC };
-enum CrossoverType { SPC, TPCS };
-
-const int populationSize = 100;
 
 class Generation {
 public:
-	Generation();
-	Generation(int, int, int, SolverType, GraphType, CrossoverType);
-	Generation(char *filename);
+	Generation(TestType TT);
 	~Generation();
 
 	void randomCreation();
 	Indiv *reproduct();
-	void crossover(Indiv *, Indiv *);
-	void mutation(Indiv *);
-	void evaluate(Indiv *);
+	void crossover(Indiv *indiv1, Indiv *indiv2);
+	void mutation(Indiv *indiv);
+	void evaluate(Indiv *indiv);
 
 	void sort();
 	long long max_fitness();
 	Edge *randomEdge();
 
-	Indiv *sizeManipulation(Indiv *, int, int);
+	Indiv *sizeManipulation(Indiv *indiv, int V_change, int E_change);
 
-	SolverType S;
-	GraphType G;
-	CrossoverType CO;
-
-	int V, E, C;
+	TestType TT;
 	vector<Indiv *> population;
 };
 

@@ -58,7 +58,7 @@ bool EdmondsKarp::bfs(int src, int sink) {
 }
 
 int EdmondsKarp::dfs(int src, int sink) {
-	int f = 2e9;
+	int f = (int)2e9;
 	int x = sink;
 	while(x != src) {
 		//edgeCount++;

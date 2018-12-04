@@ -80,7 +80,7 @@ long long Dinic::match(int src, int sink) {
 	long long totalFlow = 0;
 	while(bfs(src, sink)) {
 		int ret;
-		while((ret = dfs(src, sink, 2e9))) totalFlow += ret;
+		while((ret = dfs(src, sink, (int)2e9))) totalFlow += ret;
 	}
 	return edgeCount;
 }
