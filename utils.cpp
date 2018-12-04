@@ -1,5 +1,4 @@
 #include "utils.h"
-#include <chrono>
 using namespace std;
 
 extern mt19937 gen;
@@ -23,12 +22,12 @@ int random_int(int s, int e) {
 
 /* pick cnt distinct random integers in [s, e]*/
 vector<int> random_distinct_int(int s, int e, int cnt) {
-	int i, p;
+	assert(cnt <= e - s + 1);
 	vector<int> fisher, res;
-	for(i = s; i <= e; i++)
+	for(int i = s; i <= e; i++)
 		fisher.push_back(i);
-	for(i = s; cnt--; i++) {
-		p = random_int(i, e);
+	for(int i = 0; cnt--; i++) {
+		int p = random_int(i, e - s);
 		swap(fisher[i], fisher[p]);
 		res.push_back(fisher[i]);
 	}
