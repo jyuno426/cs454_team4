@@ -4,5 +4,9 @@
 *.user
 Debug/
 Release/
+
 res/
 run
+.o/
+.d/
+

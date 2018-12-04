@@ -176,7 +176,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	int dist;
 	for(i = dist = 0; i < TT.V; dist += state[i++])
 		index_change[i] = i + dist;
-	
+
 	for(i = 0; i < TT.E; i++) {
 		Edge *edge = indiv->gene[i];
 		int s = index_change[edge->s];
@@ -222,7 +222,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 //			delete *(it_added++);
 	}
 	/* ------------------------------------------- */
-	
+
 	assert(res->gene.size() == TT.E + E_change);
 
 	return res;

@@ -63,7 +63,7 @@ dist: $(DISTFILES)
 
 .PHONY: clean
 clean:
-	$(RM) -r $(OBJDIR) $(DEPDIR)
+	$(RM) -r $(OBJDIR) $(DEPDIR) $(BIN)
 
 .PHONY: distclean
 distclean: clean

@@ -14,10 +14,10 @@ struct TestType {
 	GraphType GT;
 	CrossoverType CT;
 	int V, E, C;
-	
+
 	TestType(const TestType &_TT);
 	TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C);
-	
+
 	void deepCopy(const TestType &_TT);
 };
 
