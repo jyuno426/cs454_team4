@@ -30,20 +30,23 @@ const int populationSize = 100;
 class Generation {
 public:
 	Generation();
-	~Generation();
 	Generation(int, int, int, SolverType, GraphType, CrossoverType);
+	~Generation();
 
-	vector<Indiv *> population;
 	pair<Indiv *, Indiv *> crossover(Indiv *, Indiv *);
 	Indiv *mutation(Indiv *);
-	Indiv *sizeManipulation(Indiv *, int, int);
 	long long fitness(Indiv *);
+
+	Indiv *sizeManipulation(Indiv *, int, int);
+
+	Edge *randomEdge();
 
 	SolverType S;
 	GraphType G;
 	CrossoverType CO;
 
 	int V, E, C;
+	vector<Indiv *> population;
 };
 
 #endif

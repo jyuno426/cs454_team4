@@ -5,71 +5,32 @@
 #include "algo/edmondsKarp.h"
 #include "algo/fordFulkerson.h"
 
-/* ---- Helper Functions ---- */
-// construct random edge according to graph type.
-Edge *randomEdge(int V, int C, GraphType G) {
-	int s = 0, t = 0, c = random_int(1, C);
-	if (G == ANY) {
-		while (s == t) {
-			s = random_int(0, V - 1);
-			t = random_int(0, V - 1);
-		}
-	}
-	if (G == AC) {
-		auto tmp = random_multiple_int(0, V - 1, 2);
-		s = tmp[0], t = tmp[1];
-	}
-	return new Edge(s, t, c);
-}
-Edge *randomEdge(int s, int t, int V, int C, GraphType G) {
-	int c = random_int(1, C);
-	if (G == ANY) {
-		if (random_int(0, 1)) swap(s, t);
-	}
-	if (G == AC) {
-		if (s > t) swap(s, t);
-	}
-	return new Edge(s, t, c);
-}
-
 /* -------- Edge --------*/
 Edge::Edge() {}
-Edge::Edge(Edge *edge) {
-	s = edge->s, t = edge->t, c = edge->c;
-}
-Edge::Edge(int _s, int _t, int _c) {
-	s = _s, t = _t, c = _c;
-}
+Edge::Edge(Edge *e): s(e->s), t(e->t), c(e->c) {}
+Edge::Edge(int _s, int _t, int _c): s(_s), t(_t), c(_c) {}
 
 /* -------- Indiv --------*/
 Indiv::Indiv() {}
-Indiv::Indiv(int n) { gene.resize(n); }
-Indiv::~Indiv() {
-	for (auto &edge : gene) delete edge;
-}
+Indiv::Indiv(int n) { if (n > 0) gene.resize(n); }
+Indiv::~Indiv() { for (auto &e: gene) delete e; }
 
 /* -------- Generation --------*/
 Generation::Generation() {}
-Generation::~Generation() {
-	for (auto &indiv : population) delete indiv;
-}
-Generation::Generation(int V, int E, int C, SolverType _S, GraphType _G, CrossoverType _CO) {
-	S = _S, G = _G, CO = _CO;
-
-	int i, j;
-
-	for (i = 0; i < populationSize; i++) {
-		Indiv *indiv = new Indiv();
-		for (j = 0; j < E; j++)
-			indiv->gene.push_back(randomEdge(V, C, G));
+Generation::Generation(int _V, int _E, int _C, SolverType _S, GraphType _G, CrossoverType _CO):
+	V(_V), E(_E), C(_C), S(_S), G(_G), CO(_CO) {
+	for (int i = 0; i < populationSize; i++) {
+		Indiv *indiv = new Indiv(E);
+		for (int j = 0; j < E; j++)
+			indiv->gene[j] = randomEdge();
 		population.push_back(indiv);
 	}
 }
-pair<Indiv *, Indiv *> Generation::crossover(Indiv *indiv1, Indiv *indiv2) {
-	Indiv *res1 = new Indiv(E);
-	Indiv *res2 = new Indiv(E);
+Generation::~Generation() { for (auto &i: population) delete i; }
 
-	// single-point crossover
+pair<Indiv *, Indiv *> Generation::crossover(Indiv *indiv1, Indiv *indiv2) {
+	Indiv *res1 = new Indiv(E), *res2 = new Indiv(E);
+
 	if (CO == SPC) {
 		int i, point = random_int(0, E - 1);
 		for (i = 0; i <= point; i++) {
@@ -82,76 +43,26 @@ pair<Indiv *, Indiv *> Generation::crossover(Indiv *indiv1, Indiv *indiv2) {
 		}
 	}
 
-	// two-point crossover with shift
 	if (CO == TPCS) {
 
 	}
 
 	return { res1, res2 };
 }
+
 Indiv *Generation::mutation(Indiv *indiv) {
 	Indiv *res = new Indiv(E);
 
 	for (int i = 0; i < E; i++) {
 		if (random_real(0, E) < 1)
-			res->gene[i] = randomEdge(V, C, G);
+			res->gene[i] = randomEdge();
 		else
 			res->gene[i] = new Edge(indiv->gene[i]);
 	}
 
 	return res;
 }
-Indiv *Generation::sizeManipulation(Indiv *indiv, int v_change, int e_change) {
-	Indiv *res = new Indiv(E + e_change);
 
-	if (v_change > 0 && e_change >= v_change) {
-		Indiv old_edges(E), new_edges(e_change);
-
-		auto splitted = random_multiple_int(0, V - 1, v_change);
-
-		int i, j;
-		vector<bool> is_splitted(V);
-		vector<int> index_change(V);
-		for (i = j = 0; i < V; i++) {
-			index_change[i] = j;
-			if (j < splitted.size() && i == splitted[j]) {
-				is_splitted[i] = true;
-				j++;
-			}
-			else
-				is_splitted[j] = false;
-		}
-
-		for (i = 0; i < E; i++) {
-			Edge *edge = indiv->gene[i];
-			int s = edge->s, t = edge->t;
-			s = s + index_change[s] + random_int(0, is_splitted[s]);
-			t = t + index_change[t] + random_int(0, is_splitted[t]);
-			old_edges.gene[i] = new Edge(s, t, edge->c);
-		}
-
-		for (i = 0; i < e_change; i++) {
-			if (i < v_change) {
-				int s = splitted[i], t = s + 1;
-				new_edges.gene[i] = randomEdge(s, t, V, C, G);
-			}
-			else
-				new_edges.gene[i] = randomEdge(V, C, G);
-		}
-
-		auto shuffled_order = random_shuffle_int(0, e_change - 1);
-		auto new_location = random_multiple_int(0, E + v_change - 1, e_change);
-
-		for (i = j = 0; i < E + e_change; i++) {
-			if (i == new_location[j])
-				res->gene[i] = new_edges.gene[shuffled_order[j++]];
-			else
-				res->gene[i] = old_edges.gene[i - j];
-		}
-	}
-	
-	return res;
-}
 long long Generation::fitness(Indiv *a) {
 	if (S == DINIC) {
 		Dinic d(a, V);
@@ -169,4 +80,91 @@ long long Generation::fitness(Indiv *a) {
 	}
 
 	return 0;
+}
+
+Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
+	/* Logic
+		Original graph size is (V, E).
+		V_change and E_change can be negative.
+
+		1. Fit vertex size into V + V_change.
+			1-1. When increasing vertex size,
+					randomly select |V_change| vertices from [0, V-1] and split it into two vertices.
+			1-2. When splitting each vertex i,
+					- newly added vertex becomes i+1 and the following vertices become i+2, i+3, ... , V.
+					- all incoming edges (for original i) attach to i / all outgoing edges attach to i+1.
+					- add one random edge from i to i+1.
+			1-3. When decreasing vertex size,
+					- randomly select |V_change| vertices from [0, V-2].
+					- If we select vertex i, merge it with i+1 into one vertex.
+		2. Fit edge size into E + E_change.
+			2-1. When increasing edge size,
+					add random edges into a random position in the gene.
+			2-2. When decreasing edge size,
+					delete randomly selected edges.
+	*/
+
+	int i;
+	int A = max({ 0, V_change, E_change });	// # of added edges
+	int D = (E + A) - (E + E_change);		// # of deleted edges
+
+	vector<Edge *> edges_kept(E), edges_added(A);
+	Indiv *res = new Indiv();
+
+	/* ------------ 1. Fit vertex size ----------- */
+	auto splitted = random_distinct_int(0, V - 1, V_change);
+	auto merged = random_distinct_int(0, V - 2, -V_change);
+	vector<int> state(V, 0);		// -1: merged, 0: none, 1: splitted
+	vector<int> index_change(V, 0);	// index change table of "old" vertices
+
+	for (i = 0; i < V_change; i++)
+		state[splitted[i]] = 1;
+	for (i = 0; i < -V_change; i++)
+		state[merged[i]] = -1;
+
+	int dist;
+	for (i = dist = 0; i < V; dist += state[i++])
+		index_change[i] = i + dist;
+
+	for (i = 0; i < E; i++) {
+		Edge *edge = indiv->gene[i];
+		int s = index_change[edge->s];
+		int t = index_change[edge->t];
+		// edge->s is splitted and the edge is outgoing.
+		if (state[edge->s] == 1) s++;
+		edges_kept[i] = new Edge(s, t, edge->c);
+	}
+	/* ------------------------------------------- */
+
+	/* ------------- 2. Fit Edge size ------------ */
+	for (i = 0; i < A; i++) {
+		if (i < V_change)	// edge between splitted vertices
+			edges_added[i] = new Edge(splitted[i], splitted[i] + 1, random_int(1, C));
+		else
+			edges_added[i] = randomEdge();
+	}
+
+	auto added = random_distinct_int(0, E + A - 1, A);		// position of added edges
+	auto deleted = random_distinct_int(0, E + A - 1, D);	// position of deleted edges
+
+	int it_added = 0, it_deleted = 0;
+	for (i = 0; i < E + A; i++) {
+		if (i == deleted[it_deleted])
+			it_deleted++;
+		else if (i == added[it_added])
+			res->gene.push_back(edges_added[it_added++]);
+		else
+			res->gene.push_back(edges_kept[i - it_deleted - it_added]);
+	}
+	/* ------------------------------------------- */
+
+	return res;
+}
+
+// construct a random edge according to graph type.
+Edge *Generation::randomEdge() {
+	int s = random_int(0, V - 1);
+	int t = random_int(0, V - 1);
+	if (G == AC && s > t) swap(s, t);
+	return new Edge(s, t, random_int(1, C));
 }

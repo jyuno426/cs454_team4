@@ -22,21 +22,19 @@ int random_int(int s, int e) {
 	return dis(gen);
 }
 
-/* pick cnt distinct random integers in [s, e] in increasing order */
-vector<int> random_multiple_int(int s, int e, int cnt) {
-	vector<int> res;
-	for (int flag = s - 1; cnt--;) {
-		flag = random_int(flag + 1, e - cnt);
-		res.push_back(flag);
-	}
-	return res;
-}
-
 /* shuffle [s, e] and return it */
 vector<int> random_shuffle_int(int s, int e) {
 	vector<int> res;
 	for (int i = s; i <= e; i++)
 		res.push_back(i);
 	shuffle(res.begin(), res.end(), gen);
+	return res;
+}
+
+/* pick cnt distinct random integers in [s, e]*/
+vector<int> random_distinct_int(int s, int e, int cnt) {
+	if (cnt <= 0) return vector<int>();
+	auto res = random_shuffle_int(s, e);
+	res.resize(cnt);
 	return res;
 }
