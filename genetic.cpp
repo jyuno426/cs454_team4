@@ -13,7 +13,11 @@ bool IndivCompare(Indiv *aa, Indiv *bb) {
 };
 
 /* -------- TestType --------*/
+TestType::TestType(const TestType &_TT) { deepCopy(_TT); }
 TestType::TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C) : ST(ST), GT(GT), CT(CT), V(V), E(E), C(C) {}
+void TestType::deepCopy(const TestType &_TT) {
+	ST = _TT.ST, GT = _TT.GT, CT = _TT.CT, V = _TT.V, E = _TT.E, C = _TT.C;
+}
 
 /* -------- Edge --------*/
 Edge::Edge() {}
@@ -31,7 +35,7 @@ Indiv::Indiv(Indiv *indiv) {
 Indiv::~Indiv() { for(auto &e : gene) delete e; }
 
 /* -------- Generation --------*/
-Generation::Generation(TestType TT) : TT(TT) {}
+Generation::Generation(const TestType &TT) : TT(TT) {}
 Generation::~Generation() {
 	for(auto &i : population) delete i;
 }
@@ -58,6 +62,7 @@ Indiv *Generation::reproduct() {
 	while(candidates.size() < 8)
 		candidates.push_back(population[random_int(0, populationSize - 1)]);
 	while(candidates.size() > 1) {
+		assert(candidates.size() % 2 == 0);
 		vector<Indiv *> tmp = candidates;
 		candidates.clear();
 		for(size_t j = 0; j < tmp.size(); j += 2)
@@ -159,26 +164,26 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 
 	/* ------------ 1. Fit vertex size ----------- */
 	auto splitted = random_distinct_int(0, TT.V - 1, V_change);
-	auto merged = random_distinct_int(0, TT.V - 2, -V_change);
+	//auto merged = random_distinct_int(0, TT.V - 2, -V_change);
 	vector<int> state(TT.V, 0);		// -1: merged, 0: none, 1: splitted
 	vector<int> index_change(TT.V, 0);	// index change table of "old" vertices
 
 	for(i = 0; i < V_change; i++)
 		state[splitted[i]] = 1;
-	for(i = 0; i < -V_change; i++)
-		state[merged[i]] = -1;
+	//for(i = 0; i < -V_change; i++)
+	//	state[merged[i]] = -1;
 
 	int dist;
 	for(i = dist = 0; i < TT.V; dist += state[i++])
 		index_change[i] = i + dist;
-
+	
 	for(i = 0; i < TT.E; i++) {
 		Edge *edge = indiv->gene[i];
 		int s = index_change[edge->s];
 		int t = index_change[edge->t];
 		// edge->s is splitted and the edge is outgoing.
 		if(state[edge->s] == 1) s++;
-		edges_kept[i] = new Edge(s, t, edge->c);
+		edges_kept.push_back(new Edge(s, t, edge->c));
 	}
 
 	for(auto &p : splitted) {
@@ -194,14 +199,14 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	shuffle(edges_added.begin(), edges_added.end(), gen);
 
 	int A = (int)edges_added.size();		// # of added edges
-	int D = (TT.E + A) - (TT.E + E_change);	// # of deleted edges
+	//int D = (TT.E + A) - (TT.E + E_change);	// # of deleted edges
 
 	state.resize(TT.E + A);
 	fill(state.begin(), state.end(), 0);
 	// position of added edges
-	for(auto &p : random_distinct_int(0, TT.E + A - 1, A)) state[p] |= 1;
+	for(auto &p : random_distinct_int(0, TT.E + A - 1, A)) state[p] += 1;
 	// position of deleted edges
-	for(auto &p : random_distinct_int(0, TT.E + A - 1, D)) state[p] |= 2;
+	//for(auto &p : random_distinct_int(0, TT.E + A - 1, D)) state[p] += 2;
 	// 00: kept / 01: added / 10: kept and deleted / 11: added and deleted
 
 	auto it_added = edges_added.begin();
@@ -211,12 +216,14 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 			res->gene.push_back(*(it_kept++));
 		else if(state[i] == 1)
 			res->gene.push_back(*(it_added++));
-		else if(state[i] == 2)
-			delete *(it_kept++);
-		else
-			delete *(it_added++);
+//		else if(state[i] == 2)
+//			delete *(it_kept++);
+//		else
+//			delete *(it_added++);
 	}
 	/* ------------------------------------------- */
+	
+	assert(res->gene.size() == TT.E + E_change);
 
 	return res;
 }

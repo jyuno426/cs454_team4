@@ -14,8 +14,11 @@ struct TestType {
 	GraphType GT;
 	CrossoverType CT;
 	int V, E, C;
-
+	
+	TestType(const TestType &_TT);
 	TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C);
+	
+	void deepCopy(const TestType &_TT);
 };
 
 class Edge {
@@ -41,7 +44,7 @@ public:
 
 class Generation {
 public:
-	Generation(TestType TT);
+	Generation(const TestType &_TT);
 	~Generation();
 
 	void randomCreation();
