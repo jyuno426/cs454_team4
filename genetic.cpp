@@ -5,6 +5,8 @@
 #include "algo/edmondsKarp.h"
 #include "algo/fordFulkerson.h"
 
+mt19937 gen;
+
 /* -------- Edge --------*/
 Edge::Edge() {}
 Edge::Edge(Edge *e): s(e->s), t(e->t), c(e->c) {}
@@ -105,10 +107,8 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	*/
 
 	int i;
-	int A = max({ 0, V_change, E_change });	// # of added edges
-	int D = (E + A) - (E + E_change);		// # of deleted edges
 
-	vector<Edge *> edges_kept(E), edges_added(A);
+	vector<Edge *> edges_kept, edges_added;
 	Indiv *res = new Indiv();
 
 	/* ------------ 1. Fit vertex size ----------- */
@@ -134,15 +134,21 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 		if (state[edge->s] == 1) s++;
 		edges_kept[i] = new Edge(s, t, edge->c);
 	}
+
+	for (auto &p : splitted) {
+		int v = index_change[p];
+		edges_added.push_back(new Edge(v, v + 1, random_int(1, C)));
+	}
 	/* ------------------------------------------- */
 
 	/* ------------- 2. Fit Edge size ------------ */
-	for (i = 0; i < A; i++) {
-		if (i < V_change)	// edge between splitted vertices
-			edges_added[i] = new Edge(splitted[i], splitted[i] + 1, random_int(1, C));
-		else
-			edges_added[i] = randomEdge();
-	}
+	// edges_added.size() can be larger than E_change
+	while (edges_added.size() < E_change)
+		edges_added.push_back(randomEdge());
+	shuffle(edges_added.begin(), edges_added.end(), gen);
+
+	int A = edges_added.size();			// # of added edges
+	int D = (E + A) - (E + E_change);	// # of deleted edges
 
 	state.resize(E + A);
 	fill(state.begin(), state.end(), 0);
@@ -157,7 +163,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	for (i = 0; i < E + A; i++) {
 		if (state[i] == 1)
 			res->gene.push_back(*(it_added++));
-		else if (state[i] == 0)
+		else if(state[i] == 0)
 			res->gene.push_back(*(it_kept++));
 	}
 	/* ------------------------------------------- */

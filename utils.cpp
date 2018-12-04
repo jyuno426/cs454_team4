@@ -1,9 +1,8 @@
 #include "utils.h"
-#include <random>
 #include <chrono>
 using namespace std;
 
-static mt19937 gen;
+extern mt19937 gen;
 
 /* initialization */
 void util_init() {
@@ -22,19 +21,16 @@ int random_int(int s, int e) {
 	return dis(gen);
 }
 
-/* shuffle [s, e] and return it */
-vector<int> random_shuffle_int(int s, int e) {
-	vector<int> res;
-	for (int i = s; i <= e; i++)
-		res.push_back(i);
-	shuffle(res.begin(), res.end(), gen);
-	return res;
-}
-
 /* pick cnt distinct random integers in [s, e]*/
 vector<int> random_distinct_int(int s, int e, int cnt) {
-	if (cnt <= 0) return vector<int>();
-	auto res = random_shuffle_int(s, e);
-	res.resize(cnt);
+	int i, p;
+	vector<int> fisher, res;
+	for (i = s; i <= e; i++)
+		fisher.push_back(i);
+	for (i = s; cnt--; i++) {
+		p = random_int(i, e);
+		swap(fisher[i], fisher[p]);
+		res.push_back(fisher[i]);
+	}
 	return res;
 }
