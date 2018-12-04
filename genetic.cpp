@@ -153,18 +153,23 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	state.resize(E + A);
 	fill(state.begin(), state.end(), 0);
 	// position of added edges
-	for (auto &p : random_distinct_int(0, E + A - 1, A)) state[p] = 1;
+	for (auto &p : random_distinct_int(0, E + A - 1, A)) state[p] |= 1;
 	// position of deleted edges
-	for (auto &p : random_distinct_int(0, E + A - 1, D)) state[p] = -1;
-	// -1: deleted / 0: edges_kept / 1: edges_added
+	for (auto &p : random_distinct_int(0, E + A - 1, D)) state[p] |= 2;
+	// 00: kept / 01: added / 10: kept and deleted / 11: added and deleted
 
 	auto it_added = edges_added.begin();
 	auto it_kept = edges_kept.begin();
 	for (i = 0; i < E + A; i++) {
+		if (state[i] == 0)
+			res->gene.push_back(*it_kept);
 		if (state[i] == 1)
-			res->gene.push_back(*(it_added++));
-		else if(state[i] == 0)
-			res->gene.push_back(*(it_kept++));
+			res->gene.push_back(*it_added);
+
+		if (state[i] & 1)
+			it_added++;
+		else
+			it_kept++;
 	}
 	/* ------------------------------------------- */
 
