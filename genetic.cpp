@@ -5,7 +5,8 @@
 #include "algo/edmondsKarp.h"
 #include "algo/fordFulkerson.h"
 
-mt19937 gen;
+extern mt19937 gen;
+
 int fitnessCount;
 bool IndivCompare(Indiv *aa, Indiv *bb) {
 	return aa->fitness < bb->fitness;

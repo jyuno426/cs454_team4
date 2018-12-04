@@ -1,7 +1,7 @@
 #include "utils.h"
 using namespace std;
 
-extern mt19937 gen;
+mt19937 gen;
 
 /* initialization */
 void util_init() {
