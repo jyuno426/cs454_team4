@@ -73,10 +73,12 @@ all: $(BIN)
 debug: CPPFLAGS += $(DEBUGFLAGS)
 debug: LDFLAGS += $(LDDEBUGFLAGS)
 debug: $(BIN)
+	mkdir -p res
 
 .PHONY: release
 release: CPPFLAGS += $(RELEASEFLAGS)
 release: $(BIN)
+	mkdir -p res
 
 dist: $(DISTFILES)
 	$(TAR) -cvzf $(DISTOUTPUT) $^
