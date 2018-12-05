@@ -244,9 +244,11 @@ void Generation::load(const char *path) {
 		Indiv *indiv = new Indiv();
 		fscanfRes = fscanf(file, "%lld\n", &indiv->fitness);
 		assert(fscanfRes == 1);
-		for(auto *edge : indiv->gene) {
+		for(int j = 0; j < TT.E; j++) {
+			Edge *edge = new Edge();
 			fscanfRes = fscanf(file, "%d %d %d\n", &edge->s, &edge->t, &edge->c);
 			assert(fscanfRes == 3);
+			indiv->gene.push_back(edge);
 		}
 		population.push_back(indiv);
 	}

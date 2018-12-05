@@ -7,6 +7,17 @@ using namespace std;
 
 extern int fitnessCount;
 
+vector<long long> fitnessLog;
+
+
+void writeLog(const char *path) {
+	FILE *file = fopen(path, "w");
+	for (auto &v : fitnessLog)
+		fprintf(file, "%lld\n", v);
+	fclose(file);
+}
+
+
 Generation *GA(Generation *cur, int steps) {
 	while(steps--) {
 		Generation *next = new Generation(cur->TT);
@@ -37,8 +48,9 @@ Generation *GA(Generation *cur, int steps) {
 
 		delete cur;
 		cur = next;
-
-		fprintf(stderr, "fitness: %lld\n", cur->max_fitness());
+		
+		fitnessLog.push_back(cur->max_fitness());
+//		printf("fitness: %lld\n", cur->max_fitness());
 	}
 
 	cur->sort();
@@ -65,12 +77,12 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 	int i, j, k;
 	int steps, SM_Tries, GA_Tries;
-	for(steps = 1; steps * steps * populationSize < fitnessLimit; steps++);
+	for(steps = 1; (steps + 1) * (steps + 1) * populationSize <= fitnessLimit; steps++);
 	SM_Tries = steps / 2;
 	GA_Tries = steps - SM_Tries;
 
 	for(i = 1; i <= steps; i++) {
-		fprintf(stderr, "Step: %d\n", i);
+//		printf("Step: %d\n", i);
 		int V_change = (TT_to.V - TT_from.V) * i / steps - (TT_to.V - TT_from.V) * (i - 1) / steps;
 		int E_change = (TT_to.E - TT_from.E) * i / steps - (TT_to.E - TT_from.E) * (i - 1) / steps;
 
@@ -79,7 +91,7 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 		Generation *next = new Generation(TT_cur);
 
-		fprintf(stderr, "sizeManipulating");
+		puts("sizeManipulating");
 		// sizeManipulation
 		for(j = 0; j < populationSize; j++) {
 			// option 1
@@ -105,12 +117,16 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 			// option 2?
 		}
+		for (j = 0; j < SM_Tries; j++)
+			fitnessLog.push_back(next->max_fitness());
 
-		fprintf(stderr, "GA\n");
+		puts("GA");
 		// GA over same size
 
-		if(i == steps)
+		if(i == steps) {
+			//assert(fitnessLimit >= fitnessCount);
 			next = GA(next, (fitnessLimit - fitnessCount) / populationSize);
+		}
 		else
 			next = GA(next, GA_Tries);
 
@@ -122,23 +138,39 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 }
 
 void exp1() {
+	puts("start exp1");
 	const int fitnessLimit = 50000;
-
+	
+	
 	const TestType TT1 = { DINIC, AC, SPC, 100, 5000, 10000 };
+	
 	fitnessCount = 0;
-	// Generation *res1 = originalGA(TT1, fitnessLimit);
-	Generation *res1 = new Generation(TT1);
-	res1->randomCreation();
+	fitnessLog.clear();
+	Generation *res1 = originalGA(TT1, fitnessLimit);
+	res1->dump("res/origin_DINIC_AC_SPC_100_5000_10000_50000.dump");
+	writeLog("res/origin_DINIC_AC_SPC_100_5000_10000_50000.log");
+	printf("res1: %lld\n", res1->max_fitness());
 
 	const TestType TT2 = { DINIC, AC, SPC, 110, 5500, 10000 };
-
-	// fitnessCount = 0;
-	// Generation *res2 = originalGA(TT2, fitnessLimit);
+	
+	
+	fitnessCount = 0;
+	fitnessLog.clear();
+	Generation *res2 = originalGA(TT2, fitnessLimit);
+	res2->dump("res/origin_DINIC_AC_SPC_110_5500_10000_50000.dump");
+	writeLog("res/origin_DINIC_AC_SPC_110_5500_10000_50000.log");
+	printf("res2: %lld\n", res2->max_fitness());
+	
+	//Generation *res1 = new Generation();
+	//res1->load("res/origin_DINIC_AC_SPC_100_5000_10000_50000.dump");
 
 	fitnessCount = 0;
+	fitnessLog.clear();
 	Generation *res3 = sizeFlexibleGA(res1, TT2, fitnessLimit);
-
-	// Now compare res2 and res3
+	res3->dump("res/sizeFlexible_DINIC_AC_SPC_110_5500_10000_50000.dump");
+	writeLog("res/sizeFlexible_DINIC_AC_SPC_110_5500_10000_50000.log");
+	printf("res3: %lld\n", res3->max_fitness());
+	
 }
 
 int main() {
