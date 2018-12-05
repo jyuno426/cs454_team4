@@ -67,6 +67,7 @@ PRECOMPILE =
 POSTCOMPILE = mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d
 
 all: $(BIN)
+	mkdir -p res
 
 .PHONY: debug
 debug: CPPFLAGS += $(DEBUGFLAGS)
