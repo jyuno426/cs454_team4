@@ -13,6 +13,7 @@ bool IndivCompare(Indiv *aa, Indiv *bb) {
 }
 
 /* -------- TestType --------*/
+TestType::TestType() {}
 TestType::TestType(const TestType &_TT) { deepCopy(_TT); }
 TestType::TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C) : ST(ST), GT(GT), CT(CT), V(V), E(E), C(C) {}
 void TestType::deepCopy(const TestType &_TT) {
@@ -35,6 +36,7 @@ Indiv::Indiv(Indiv *indiv) {
 Indiv::~Indiv() { for(auto &e : gene) delete e; }
 
 /* -------- Generation --------*/
+Generation::Generation() {}
 Generation::Generation(const TestType &TT) : TT(TT) {}
 Generation::~Generation() {
 	for(auto &i : population) delete i;
@@ -167,14 +169,14 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 
 	/* ------------ 1. Fit vertex size ----------- */
 	auto splitted = random_distinct_int(0, TT.V - 1, V_change);
-	//auto merged = random_distinct_int(0, TT.V - 2, -V_change);
+	auto merged = random_distinct_int(0, TT.V - 2, -V_change);
 	vector<int> state(TT.V, 0);		// -1: merged, 0: none, 1: splitted
 	vector<int> index_change(TT.V, 0);	// index change table of "old" vertices
 
 	for(i = 0; i < V_change; i++)
 		state[splitted[i]] = 1;
-	//for(i = 0; i < -V_change; i++)
-	//	state[merged[i]] = -1;
+	for(i = 0; i < -V_change; i++)
+		state[merged[i]] = -1;
 
 	int dist;
 	for(i = dist = 0; i < TT.V; dist += state[i++])
@@ -202,14 +204,14 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	shuffle(edges_added.begin(), edges_added.end(), gen);
 
 	int A = (int)edges_added.size();		// # of added edges
-	//int D = (TT.E + A) - (TT.E + E_change);	// # of deleted edges
+	int D = (TT.E + A) - (TT.E + E_change);	// # of deleted edges
 
 	state.resize(TT.E + A);
 	fill(state.begin(), state.end(), 0);
 	// position of added edges
 	for(auto &p : random_distinct_int(0, TT.E + A - 1, A)) state[p] += 1;
 	// position of deleted edges
-	//for(auto &p : random_distinct_int(0, TT.E + A - 1, D)) state[p] += 2;
+	for(auto &p : random_distinct_int(0, TT.E + A - 1, D)) state[p] += 2;
 	// 00: kept / 01: added / 10: kept and deleted / 11: added and deleted
 
 	auto it_added = edges_added.begin();
@@ -219,14 +221,52 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 			res->gene.push_back(*(it_kept++));
 		else if(state[i] == 1)
 			res->gene.push_back(*(it_added++));
-//		else if(state[i] == 2)
-//			delete *(it_kept++);
-//		else
-//			delete *(it_added++);
+		else if(state[i] == 2)
+			delete *(it_kept++);
+		else
+			delete *(it_added++);
 	}
 	/* ------------------------------------------- */
 
 	assert((int)res->gene.size() == TT.E + E_change);
 
 	return res;
+}
+
+void Generation::load(const char *path) {
+	FILE *file = fopen(path, "r");
+	
+	int t[6], fscanfRes;
+	for (int i = 0; i < 6; i++) {
+		fscanfRes = fscanf(file, "%d", t + i);
+		assert(fscanfRes == 1);
+	}
+	TT.deepCopy({ (SolverType)t[0], (GraphType)t[1], (CrossoverType)t[2], t[3], t[4], t[5] });
+	
+	for(int i = 0; i < populationSize; i++) {
+		Indiv *indiv = new Indiv();
+		fscanfRes = fscanf(file, "%lld\n", &indiv->fitness);
+		assert(fscanfRes == 1);
+		for(auto *edge : indiv->gene) {
+			fscanfRes = fscanf(file, "%d %d %d\n", &edge->s, &edge->t, &edge->c);
+			assert(fscanfRes == 3);
+		}
+		population.push_back(indiv);
+	}
+	
+	fclose(file);
+}
+
+void Generation::dump(const char *path) {
+	FILE *file = fopen(path, "w");
+	
+	fprintf(file, "%d %d %d %d %d %d\n", TT.ST, TT.GT, TT.CT, TT.V, TT.E, TT.C);
+	
+	for(auto *indiv : population) {
+		fprintf(file, "%lld\n", indiv->fitness);
+		for(auto *edge : indiv->gene)
+			fprintf(file, "%d %d %d\n", edge->s, edge->t, edge->c);
+	}
+	
+	fclose(file);
 }

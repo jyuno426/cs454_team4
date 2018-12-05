@@ -14,7 +14,8 @@ struct TestType {
 	GraphType GT;
 	CrossoverType CT;
 	int V, E, C;
-
+	
+	TestType();
 	TestType(const TestType &_TT);
 	TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C);
 
@@ -44,6 +45,7 @@ public:
 
 class Generation {
 public:
+	Generation();
 	Generation(const TestType &_TT);
 	~Generation();
 
@@ -61,6 +63,9 @@ public:
 
 	TestType TT;
 	vector<Indiv *> population;
+	
+	void load(const char *path);
+	void dump(const char *path);
 };
 
 class Algo {
