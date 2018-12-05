@@ -1,8 +1,9 @@
 #ifndef _FORDFULKERSON_
 #define _FORDFULKERSON_
 
-#include "../utils.h"
-#include "../genetic.h"
+#include "../graph.h"
+#include <vector>
+using namespace std;
 
 class FordFulkerson : public Algo {
 private:
@@ -14,7 +15,8 @@ private:
     bool initialized;
 public:
     FordFulkerson();
-    void init(Indiv *indiv, int _V);
+    void init(vector<Edge *> &gene, int _V);
 	long long match(int src, int sink);
 };
-#endif
+
+#endif /* _FORDFULKERSON_ */

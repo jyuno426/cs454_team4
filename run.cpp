@@ -1,5 +1,9 @@
 #include "utils.h"
 #include "genetic.h"
+#include <vector>
+#include <algorithm>
+#include <cstdio>
+using namespace std;
 
 extern int fitnessCount;
 
@@ -34,7 +38,7 @@ Generation *GA(Generation *cur, int steps) {
 		delete cur;
 		cur = next;
 
-		printf("fitness: %lld\n", cur->max_fitness());
+		fprintf(stderr, "fitness: %lld\n", cur->max_fitness());
 	}
 
 	cur->sort();
@@ -66,7 +70,7 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 	GA_Tries = steps - SM_Tries;
 
 	for(i = 1; i <= steps; i++) {
-		printf("Step: %d\n", i);
+		fprintf(stderr, "Step: %d\n", i);
 		int V_change = (TT_to.V - TT_from.V) * i / steps - (TT_to.V - TT_from.V) * (i - 1) / steps;
 		int E_change = (TT_to.E - TT_from.E) * i / steps - (TT_to.E - TT_from.E) * (i - 1) / steps;
 
@@ -75,7 +79,7 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 		Generation *next = new Generation(TT_cur);
 
-		puts("sizeManipulating");
+		fprintf(stderr, "sizeManipulating");
 		// sizeManipulation
 		for(j = 0; j < populationSize; j++) {
 			// option 1
@@ -102,7 +106,7 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 			// option 2?
 		}
 
-		puts("GA");
+		fprintf(stderr, "GA\n");
 		// GA over same size
 
 		if(i == steps)

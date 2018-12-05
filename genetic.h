@@ -1,7 +1,9 @@
 #ifndef _GENETIC_
 #define _GENETIC_
 
-#include "utils.h"
+#include "graph.h"
+#include <vector>
+using namespace std;
 
 const int populationSize = 100;
 
@@ -9,26 +11,15 @@ enum SolverType { DINIC, EC, FF };
 enum GraphType { ANY, AC };
 enum CrossoverType { SPC, TPCS };
 
-struct TestType {
+class TestType {
+public:
+	TestType();
+	TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C);
+
 	SolverType ST;
 	GraphType GT;
 	CrossoverType CT;
 	int V, E, C;
-	
-	TestType();
-	TestType(const TestType &_TT);
-	TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C);
-
-	void deepCopy(const TestType &_TT);
-};
-
-class Edge {
-public:
-	Edge();
-	Edge(Edge *e);
-	Edge(int s, int t, int c);
-
-	int s, t, c;
 };
 
 class Indiv {
@@ -63,15 +54,9 @@ public:
 
 	TestType TT;
 	vector<Indiv *> population;
-	
+
 	void load(const char *path);
 	void dump(const char *path);
 };
 
-class Algo {
-public:
-	virtual void init(Indiv *indiv, int _V) = 0;
-	virtual long long match(int src, int sink) = 0;
-};
-
-#endif
+#endif /* _GENETIC_ */

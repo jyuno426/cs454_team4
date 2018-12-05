@@ -1,8 +1,9 @@
 #ifndef _DINIC_
 #define _DINIC_
 
-#include "../utils.h"
-#include "../genetic.h"
+#include "../graph.h"
+#include <vector>
+using namespace std;
 
 class Dinic : public Algo {
 private:
@@ -16,7 +17,8 @@ private:
     bool initialized;
 public:
     Dinic();
-    void init(Indiv *indiv, int _V);
+    void init(vector<Edge *> &gene, int _V);
 	long long match(int src, int sink);
 };
-#endif
+
+#endif /* _DINIC_ */

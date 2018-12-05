@@ -1,23 +1,28 @@
-#include "../utils.h"
 #include "edmondsKarp.h"
+#include "../graph.h"
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <cassert>
+using namespace std;
 
 /* -------- EdmondsKarp -------- */
 EdmondsKarp::EdmondsKarp() {
 	initialized = false;
 }
 
-void EdmondsKarp::init(Indiv *indiv, int _V) {
+void EdmondsKarp::init(vector<Edge *> &gene, int _V) {
 	initialized = true;
 
 	V = _V;
 	graph.resize(V);
 	pred.resize(V);
 
-	if(indiv->gene.empty())
+	if(gene.empty())
 		return;
 
 	vector<Edge> edges;
-	for(auto &e : indiv->gene)
+	for(auto &e : gene)
 		edges.push_back({ e->s, e->t, e->c });
 
 	sort(edges.begin(), edges.end(), [&](const Edge a, const Edge b) {

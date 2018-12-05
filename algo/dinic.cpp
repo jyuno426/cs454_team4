@@ -1,12 +1,17 @@
-#include "../utils.h"
 #include "dinic.h"
+#include "../graph.h"
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <cassert>
+using namespace std;
 
 /* -------- Dinic --------*/
 Dinic::Dinic() {
 	initialized = false;
 }
 
-void Dinic::init(Indiv *indiv, int _V) {
+void Dinic::init(vector<Edge *> &gene, int _V) {
 	initialized = true;
 
 	V = _V;
@@ -14,11 +19,11 @@ void Dinic::init(Indiv *indiv, int _V) {
 	dist.resize(V);
 	pnt.resize(V);
 
-	if(indiv->gene.empty())
+	if(gene.empty())
 		return;
 
 	vector<Edge> edges;
-	for(auto &e : indiv->gene)
+	for(auto &e : gene)
 		edges.push_back({ e->s, e->t, e->c });
 
 	sort(edges.begin(), edges.end(), [&](const Edge a, const Edge b) {

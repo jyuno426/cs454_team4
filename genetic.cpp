@@ -1,9 +1,15 @@
-#include "utils.h"
 #include "genetic.h"
-
+#include "utils.h"
+#include "graph.h"
 #include "algo/dinic.h"
 #include "algo/edmondsKarp.h"
 #include "algo/fordFulkerson.h"
+#include <random>
+#include <vector>
+#include <cassert>
+#include <algorithm>
+#include <cstdio>
+using namespace std;
 
 extern mt19937 gen;
 
@@ -14,16 +20,7 @@ bool IndivCompare(Indiv *aa, Indiv *bb) {
 
 /* -------- TestType --------*/
 TestType::TestType() {}
-TestType::TestType(const TestType &_TT) { deepCopy(_TT); }
 TestType::TestType(SolverType ST, GraphType GT, CrossoverType CT, int V, int E, int C) : ST(ST), GT(GT), CT(CT), V(V), E(E), C(C) {}
-void TestType::deepCopy(const TestType &_TT) {
-	ST = _TT.ST, GT = _TT.GT, CT = _TT.CT, V = _TT.V, E = _TT.E, C = _TT.C;
-}
-
-/* -------- Edge --------*/
-Edge::Edge() {}
-Edge::Edge(Edge *e) : s(e->s), t(e->t), c(e->c) {}
-Edge::Edge(int s, int t, int c) : s(s), t(t), c(c) {}
 
 /* -------- Indiv --------*/
 Indiv::Indiv() {}
@@ -101,19 +98,19 @@ void Generation::evaluate(Indiv *a) {
 
 	if(TT.ST == DINIC) {
 		Dinic d;
-		d.init(a, TT.V);
+		d.init(a->gene, TT.V);
 		res = d.match(0, TT.V - 1);
 	}
 
 	if(TT.ST == EC) {
 		EdmondsKarp d;
-		d.init(a, TT.V);
+		d.init(a->gene, TT.V);
 		res = d.match(0, TT.V - 1);
 	}
 
 	if(TT.ST == FF) {
 		FordFulkerson d;
-		d.init(a, TT.V);
+		d.init(a->gene, TT.V);
 		res = d.match(0, TT.V - 1);
 	}
 
@@ -235,14 +232,14 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 
 void Generation::load(const char *path) {
 	FILE *file = fopen(path, "r");
-	
+
 	int t[6], fscanfRes;
 	for (int i = 0; i < 6; i++) {
 		fscanfRes = fscanf(file, "%d", t + i);
 		assert(fscanfRes == 1);
 	}
-	TT.deepCopy({ (SolverType)t[0], (GraphType)t[1], (CrossoverType)t[2], t[3], t[4], t[5] });
-	
+	TT = { (SolverType)t[0], (GraphType)t[1], (CrossoverType)t[2], t[3], t[4], t[5] };
+
 	for(int i = 0; i < populationSize; i++) {
 		Indiv *indiv = new Indiv();
 		fscanfRes = fscanf(file, "%lld\n", &indiv->fitness);
@@ -253,20 +250,20 @@ void Generation::load(const char *path) {
 		}
 		population.push_back(indiv);
 	}
-	
+
 	fclose(file);
 }
 
 void Generation::dump(const char *path) {
 	FILE *file = fopen(path, "w");
-	
+
 	fprintf(file, "%d %d %d %d %d %d\n", TT.ST, TT.GT, TT.CT, TT.V, TT.E, TT.C);
-	
+
 	for(auto *indiv : population) {
 		fprintf(file, "%lld\n", indiv->fitness);
 		for(auto *edge : indiv->gene)
 			fprintf(file, "%d %d %d\n", edge->s, edge->t, edge->c);
 	}
-	
+
 	fclose(file);
 }

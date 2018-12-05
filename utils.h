@@ -1,12 +1,12 @@
 #ifndef _UTILS_
 #define _UTILS_
 
-#include <bits/stdc++.h>
+#include <vector>
 using namespace std;
 
 void util_init();
-double random_real(double, double);
-int random_int(int, int);
-vector<int> random_distinct_int(int, int, int);
+double random_real(double s, double e);
+int random_int(int s, int e);
+vector<int> random_distinct_int(int s, int e, int cnt);
 
-#endif
+#endif /* _UTILS_ */
