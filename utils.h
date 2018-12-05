@@ -8,5 +8,6 @@ void util_init();
 double random_real(double s, double e);
 int random_int(int s, int e);
 vector<int> random_distinct_int(int s, int e, int cnt);
+int square(int x);
 
 #endif /* _UTILS_ */

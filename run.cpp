@@ -6,17 +6,29 @@
 #include <ctime>
 #include <cmath>
 #include <cassert>
+#include <cstring>
 using namespace std;
 
 extern int fitnessCount;
 
-vector<long long> fitnessLog;
+bool log_mode = true;
+char log_path[100] = "res/default_log.csv";
 
-void writeLog(const char *path) {
-	FILE *file = fopen(path, "w");
-	for (auto &v : fitnessLog)
-		fprintf(file, "%lld\n", v);
-	fclose(file);
+void startLog(const char *path) {
+	fitnessCount = 0;
+	for (int i = 0; i < 100; i++)
+		log_path[i] = '\0';
+	strcpy(log_path, path);
+	fclose(fopen(log_path, "w"));
+}
+
+void writeLog(long long value) {
+	if(log_mode) {
+		FILE *file = fopen(log_path, "a+");
+		int fprintfRes = fprintf(file, "%lld\n", value);
+		assert(fprintfRes > 0);
+		fclose(file);
+	}
 }
 
 Generation *GA(Generation *cur, int steps) {
@@ -50,8 +62,8 @@ Generation *GA(Generation *cur, int steps) {
 		delete cur;
 		cur = next;
 		
-		fitnessLog.push_back(cur->max_fitness());
-		//printf("fitness: %lld, %d step(s) left\n", cur->max_fitness(), steps);
+		writeLog(cur->max_fitness());
+		printf("fitness: %lld, %d step(s) left\n", cur->max_fitness(), steps);
 	}
 
 	cur->sort();
@@ -124,8 +136,11 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 			}
 			next->population.push_back(winner);
 		}
-		for (j = 0; j < SM_Tries; j++)
-			fitnessLog.push_back(next->max_fitness());
+		
+		// Since SM_Tries generation has passed, write log SM_Tries times.
+		for(j = 0; j < SM_Tries; j++)
+			writeLog(next->max_fitness());
+		printf("after sizeManipulation: %lld\n", next->max_fitness());
 
 		// GA over same size
 		if(i == steps)
@@ -142,61 +157,60 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 void exp1() {
 	puts("start exp1");
-	//const int fitnessLimit = 1000000;
+	
+	// char path[100];
+	const int maxCapacity = 10000;
+	const int smallSize = 100;
+	const int bigSize = 200;
+	const int sizeUp = bigSize - smallSize;
+	
+	Generation *res, *smallMax = NULL;
+	
+	/* --------------------------------------------- */
+	
+	// const TestType TT_small = { DINIC, AC, SPC, smallSize, square(smallSize) / 2, maxCapacity };
 	
 	/*
-	const TestType TT1 = { DINIC, AC, SPC, 100, 5000, 10000 };
+	int maxFlag = 1;
+	for(int i = 1; i <= 10; i++) {
+		sprintf(path, "res/small-%d.csv", i);
+		startLog(path);
+		
+		res = new Generation();
+		res->randomCreation();
+		res = originalGA(TT_small, 150000);
+		
+		printf("small-%d complete: %lld\n", i, res->max_fitness());
+		
+		if(i == 1)
+			smallMax = res;
+		else if (smallMax->max_fitness() < res->max_fitness()) {
+			delete smallMax;
+			smallMax = res;
+			maxFlag = 1;
+		}
+		else
+			delete res;
+	}
 	
-	fitnessCount = 0;
-	fitnessLog.clear();
-	Generation *res1 = originalGA(TT1, 100000);
-	res1->dump("res/res1.dump");
-	writeLog("res/res1.csv");
-	printf("res1: %lld\n", res1->max_fitness());
+	printf("smallMax flag: %d\n", maxFlag);
+	
 	*/
 	
-	/*
-	const TestType TT2 = { DINIC, AC, SPC, 200, 20000, 10000 };
+	/* ---------------------------------------------- */
 	
+	smallMax = new Generation();
+	smallMax->load("res/smallMax.dump");
 	
-	fitnessCount = 0;
-	fitnessLog.clear();
-	Generation *res2 = originalGA(TT2, fitnessLimit);
-	res2->dump("res/res2.dump");
-	writeLog("res/res2.csv");
-	printf("res2: %lld\n", res2->max_fitness());
-	*/
+	const TestType TT_big = { DINIC, AC, SPC, bigSize, square(bigSize) / 2, maxCapacity };
 	
-	Generation *res1 = new Generation();
-	res1->load("res/res1.dump");
-	const TestType TT3_to = { DINIC, AC, SPC, 200, 20000, 10000 };
+	startLog("res/smallToBig.csv");
+	res = sizeFlexibleGA(smallMax, TT_big, sizeUp * 10000);
+	res->dump("res/smallToBig.dump");
 	
-	fitnessCount = 0;
-	fitnessLog.clear();
-	Generation *res3 = sizeFlexibleGA(res1, TT3_to, 1000000);
-	res3->dump("res/res3.dump");
-	writeLog("res/res3.csv");
-	printf("res3: %lld\n", res3->max_fitness());
-	
-	/*
-	fitnessCount = 0;
-	fitnessLog.clear();
-	Generation *res5 = new Generation();
-	res5->load("res/res2.dump");
-	res5 = GA(res5, fitnessLimit / populationSize);
-	res5->dump("res/res5.dump");
-	writeLog("res/res5.csv");
-	printf("res5: %lld\n", res5->max_fitness());
-
-	fitnessCount = 0;
-	fitnessLog.clear();
-	Generation *res6 = new Generation();
-	res6->load("res/res4.dump");
-	res6 = GA(res6, fitnessLimit / populationSize);
-	res6->dump("res/res6.dump");
-	writeLog("res/res6.csv");
-	printf("res6: %lld\n", res6->max_fitness());*/
+	printf("smallToBig complete: %lld\n", res->max_fitness());
 }
+
 
 void exp2() {
 	puts("start exp2");
@@ -209,66 +223,55 @@ void exp2() {
 	clock_t s, e;
 	double duration;
 
-	fitnessCount = 0;
-	fitnessLog.clear();
+	startLog("res/dinic_small.csv");
 	s = clock();
 	Generation *res_dinic1 = originalGA(DN1, fitnessLimit);
-	e = clock()
-	res_dinic1->dump("res/dinic_small.dump")
-	writeLog("res/dinic_small.csv")
+	e = clock();
+	res_dinic1->dump("res/dinic_small.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Dinic (small): time: %f sec, max fitness: %lld\n", duration, res_dinic1->max_fitness());
 
-	fitnessCount = 0;
-	fitnessLog.clear()
+	startLog("res/dinic_sf.csv");
 	s = clock();
 	Generation *res_dinic2 = sizeFlexibleGA(res_dinic1, DN2, fitnessLimit + fitnessLimit);
 	e = clock();
 	res_dinic2->dump("res/dinic_sf.dump");
-	writeLog("res/dinic_sf.csv");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Dinic (size flexible): time: %f sec, max fitness: %lld\n", duration, res_dinic2->max_fitness());
 
-	fitnessCount = 0;
-	fitnessLog.clear();
+	startLog("res/dinic_original.csv");
 	s = clock();
 	Generation *res_dinic0 = originalGA(DN2, fitnessLimit + fitnessLimit);
 	e = clock();
 	res_dinic0->dump("res/dinic_original.dump");
-	writeLog("res/dinic_original.csv");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Dinic (original): time: %f sec, max fitness: %lld\n", duration, res_dinic0->max_fitness());
 	
-	fitnessCount = 0;
-	fitnessLog.clear();
+	startLog("res/ec_small.csv");
 	s = clock();
 	Generation *res_ec1 = originalGA(EC1, fitnessLimit);
 	e = clock();
 	res_ec1->dump("res/ec_small.dump");
-	writeLog("res/ec_small.csv");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Edmond-Karp (small): time: %f sec, max fitness: %lld\n", duration, res_ec1->max_fitness());
 
-	fitnessCount = 0;
-	fitnessLog.clear();
+	startLog("res/ec_sf.csv");
 	s = clock();
 	Generation *res_ec2 = sizeFlexibleGA(res_ec1, EC2, fitnessLimit + fitnessLimit);
 	e = clock();
 	res_ec2->dump("res/ec_sf.dump");
-	writeLog("res/ec_sf.csv");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Edmond-Karp (size flexible): time: %f sec, max fitness: %lld\n", duration, res_ec2->max_fitness());
 
-	fitnessCount = 0;
-	fitnessLog.clear();
+	startLog("res/ec_original.csv");
 	s = clock();
 	Generation *res_ec0 = originalGA(EC2, fitnessLimit + fitnessLimit);
 	e = clock();
 	res_ec0->dump("res/ec_original.dump");
-	writeLog("res/ec_original.csv");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Edmond-Karp (original): time: %f sec, max fitness: %lld\n", duration, res_ec0->max_fitness());
 }
+
 
 int main() {
 	util_init();

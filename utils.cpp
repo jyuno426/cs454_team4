@@ -41,3 +41,5 @@ vector<int> random_distinct_int(int s, int e, int cnt) {
 	}
 	return res;
 }
+
+int square(int x) { return x * x; }
