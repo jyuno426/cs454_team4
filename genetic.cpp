@@ -155,7 +155,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 					delete randomly selected edges.
 	*/
 
-	assert(-(TT.V - 1) < V_change && V_change < TT.V);
+	assert(-TT.V < V_change && V_change <= TT.V);
 	assert(TT.V + V_change >= 1);
 	assert(TT.E + E_change >= 0);
 
