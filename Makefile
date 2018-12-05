@@ -39,11 +39,21 @@ CFLAGS := -std=c11
 # C++ flags
 CXXFLAGS := -std=c++14
 # C/C++ flags
-CPPFLAGS := -g -Wall -Wextra -pedantic -O2
+CPPFLAGS := -Wall -Wextra -pedantic -O2
+# Debug flags
+DEBUGFLAGS := -g -Wshadow -Wformat=2 -Wfloat-equal -Wconversion -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fstack-protector
+# Release flags
+RELEASEFLAGS := -DNDEBUG
 # linker flags
 LDFLAGS :=
+# linker debug flags
+LDDEBUGFLAGS :=
 # flags required for dependency generation; passed to compilers
 DEPFLAGS = -MT $@ -MD -MP -MF $(DEPDIR)/$*.Td
+
+# Following flags broken in Ubuntu 16.04:
+# -fsanitize=undefined -fno-sanitize-recover
+# -fsanitize=address
 
 # compile C source files
 COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) -c -o $@
@@ -57,6 +67,15 @@ PRECOMPILE =
 POSTCOMPILE = mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d
 
 all: $(BIN)
+
+.PHONY: debug
+debug: CPPFLAGS += $(DEBUGFLAGS)
+debug: LDFLAGS += $(LDDEBUGFLAGS)
+debug: $(BIN)
+
+.PHONY: release
+release: CPPFLAGS += $(RELEASEFLAGS)
+release: $(BIN)
 
 dist: $(DISTFILES)
 	$(TAR) -cvzf $(DISTOUTPUT) $^
