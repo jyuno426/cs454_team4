@@ -233,11 +233,12 @@ void exp2() {
 
 	startLog("res/dinic_sf.csv");
 	s = clock();
-	Generation *res_dinic2 = sizeFlexibleGA(res_dinic1, DN2, fitnessLimit + fitnessLimit);
+	Generation *res_dinic2 = sizeFlexibleGA(res_dinic1, DN2, fitnessLimit);
+	Generation *res_dinic3 = GA(res_dinic2, fitnessLimit / 100);
 	e = clock();
-	res_dinic2->dump("res/dinic_sf.dump");
+	res_dinic2->dump("res/dinic_sf1.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
-	printf("Dinic (size flexible): time: %f sec, max fitness: %lld\n", duration, res_dinic2->max_fitness());
+	printf("Dinic (size flexible): time: %f sec, max fitness: %lld\n", duration, res_dinic3->max_fitness());
 
 	startLog("res/dinic_original.csv");
 	s = clock();
@@ -257,11 +258,12 @@ void exp2() {
 
 	startLog("res/ec_sf.csv");
 	s = clock();
-	Generation *res_ec2 = sizeFlexibleGA(res_ec1, EC2, fitnessLimit + fitnessLimit);
+	Generation *res_ec2 = sizeFlexibleGA(res_ec1, EC2, fitnessLimit);
+	Generation *res_ec3 = GA(res_ec2, fitnessLimit / 100);
 	e = clock();
 	res_ec2->dump("res/ec_sf.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
-	printf("Edmond-Karp (size flexible): time: %f sec, max fitness: %lld\n", duration, res_ec2->max_fitness());
+	printf("Edmond-Karp (size flexible): time: %f sec, max fitness: %lld\n", duration, res_ec3->max_fitness());
 
 	startLog("res/ec_original.csv");
 	s = clock();
