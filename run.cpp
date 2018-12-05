@@ -78,11 +78,11 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 	int i, j, k;
 	int steps, SM_Tries, GA_Tries;
 	for(steps = 1; (steps + 1) * (steps + 1) * populationSize <= fitnessLimit; steps++);
-	SM_Tries = steps / 2;
+	SM_Tries = steps / 6;
 	GA_Tries = steps - SM_Tries;
 
 	for(i = 1; i <= steps; i++) {
-//		printf("Step: %d\n", i);
+		printf("Step: %d/%d\n", i, steps);
 		int V_change = (TT_to.V - TT_from.V) * i / steps - (TT_to.V - TT_from.V) * (i - 1) / steps;
 		int E_change = (TT_to.E - TT_from.E) * i / steps - (TT_to.E - TT_from.E) * (i - 1) / steps;
 
@@ -91,7 +91,6 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 		Generation *next = new Generation(TT_cur);
 
-		puts("sizeManipulating");
 		// sizeManipulation
 		for(j = 0; j < populationSize; j++) {
 			// option 1
@@ -120,13 +119,9 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 		for (j = 0; j < SM_Tries; j++)
 			fitnessLog.push_back(next->max_fitness());
 
-		puts("GA");
 		// GA over same size
-
-		if(i == steps) {
-			//assert(fitnessLimit >= fitnessCount);
+		if(i == steps)
 			next = GA(next, (fitnessLimit - fitnessCount) / populationSize);
-		}
 		else
 			next = GA(next, GA_Tries);
 
@@ -141,14 +136,13 @@ void exp1() {
 	puts("start exp1");
 	const int fitnessLimit = 50000;
 	
-	
 	const TestType TT1 = { DINIC, AC, SPC, 100, 5000, 10000 };
 	
 	fitnessCount = 0;
 	fitnessLog.clear();
 	Generation *res1 = originalGA(TT1, fitnessLimit);
 	res1->dump("res/origin_DINIC_AC_SPC_100_5000_10000_50000.dump");
-	writeLog("res/origin_DINIC_AC_SPC_100_5000_10000_50000.log");
+	writeLog("res/origin_DINIC_AC_SPC_100_5000_10000_50000.csv");
 	printf("res1: %lld\n", res1->max_fitness());
 
 	const TestType TT2 = { DINIC, AC, SPC, 110, 5500, 10000 };
@@ -156,9 +150,9 @@ void exp1() {
 	
 	fitnessCount = 0;
 	fitnessLog.clear();
-	Generation *res2 = originalGA(TT2, fitnessLimit);
+	Generation *res2 = originalGA(TT2, 2 * fitnessLimit);
 	res2->dump("res/origin_DINIC_AC_SPC_110_5500_10000_50000.dump");
-	writeLog("res/origin_DINIC_AC_SPC_110_5500_10000_50000.log");
+	writeLog("res/origin_DINIC_AC_SPC_110_5500_10000_50000.csv");
 	printf("res2: %lld\n", res2->max_fitness());
 	
 	//Generation *res1 = new Generation();
@@ -168,9 +162,8 @@ void exp1() {
 	fitnessLog.clear();
 	Generation *res3 = sizeFlexibleGA(res1, TT2, fitnessLimit);
 	res3->dump("res/sizeFlexible_DINIC_AC_SPC_110_5500_10000_50000.dump");
-	writeLog("res/sizeFlexible_DINIC_AC_SPC_110_5500_10000_50000.log");
+	writeLog("res/sizeFlexible_DINIC_AC_SPC_110_5500_10000_50000.csv");
 	printf("res3: %lld\n", res3->max_fitness());
-	
 }
 
 int main() {
