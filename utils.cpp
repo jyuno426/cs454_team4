@@ -21,10 +21,10 @@ int random_int(int s, int e) {
 
 /* pick cnt distinct random integers in [s, e]*/
 vector<int> random_distinct_int(int s, int e, int cnt) {
-	if(cnt < 0)
+	if(cnt <= 0)
 		return vector<int>();
 
-	assert(cnt <= e - s + 1);
+	assert(cnt <= e - s + 1 && s <= e);
 	vector<int> fisher, res;
 	for(int i = s; i <= e; i++)
 		fisher.push_back(i);

@@ -2,7 +2,13 @@
 #include "fordFulkerson.h"
 
 /* -------- FordFulkerson -------- */
-FordFulkerson::FordFulkerson(Indiv *indiv, int _V) {
+FordFulkerson::FordFulkerson() {
+	initialized = false;
+}
+
+void FordFulkerson::init(Indiv *indiv, int _V) {
+	initialized = true;
+
 	V = _V;
 	graph.resize(V);
 	pred.resize(V);
@@ -58,6 +64,7 @@ int FordFulkerson::dfs(int x, int sink, int f) {
 }
 
 long long FordFulkerson::match(int src, int sink) {
+	assert(initialized);
 	edgeCount = 0;
 	long long totalFlow = 0;
 	while(1) {

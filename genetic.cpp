@@ -10,7 +10,7 @@ extern mt19937 gen;
 int fitnessCount;
 bool IndivCompare(Indiv *aa, Indiv *bb) {
 	return aa->fitness < bb->fitness;
-};
+}
 
 /* -------- TestType --------*/
 TestType::TestType(const TestType &_TT) { deepCopy(_TT); }
@@ -98,17 +98,20 @@ void Generation::evaluate(Indiv *a) {
 	long long res = 0;
 
 	if(TT.ST == DINIC) {
-		Dinic d(a, TT.V);
+		Dinic d;
+		d.init(a, TT.V);
 		res = d.match(0, TT.V - 1);
 	}
 
 	if(TT.ST == EC) {
-		EdmondsKarp d(a, TT.V);
+		EdmondsKarp d;
+		d.init(a, TT.V);
 		res = d.match(0, TT.V - 1);
 	}
 
 	if(TT.ST == FF) {
-		FordFulkerson d(a, TT.V);
+		FordFulkerson d;
+		d.init(a, TT.V);
 		res = d.match(0, TT.V - 1);
 	}
 
@@ -223,7 +226,7 @@ Indiv *Generation::sizeManipulation(Indiv *indiv, int V_change, int E_change) {
 	}
 	/* ------------------------------------------- */
 
-	assert(res->gene.size() == TT.E + E_change);
+	assert((int)res->gene.size() == TT.E + E_change);
 
 	return res;
 }

@@ -2,7 +2,13 @@
 #include "dinic.h"
 
 /* -------- Dinic --------*/
-Dinic::Dinic(Indiv *indiv, int _V) {
+Dinic::Dinic() {
+	initialized = false;
+}
+
+void Dinic::init(Indiv *indiv, int _V) {
+	initialized = true;
+
 	V = _V;
 	graph.resize(V);
 	dist.resize(V);
@@ -77,6 +83,7 @@ int Dinic::dfs(int x, int sink, int f) {
 }
 
 long long Dinic::match(int src, int sink) {
+	assert(initialized);
 	edgeCount = 0;
 	long long totalFlow = 0;
 	while(bfs(src, sink)) {

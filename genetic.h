@@ -63,4 +63,10 @@ public:
 	vector<Indiv *> population;
 };
 
+class Algo {
+public:
+	virtual void init(Indiv *indiv, int _V) = 0;
+	virtual long long match(int src, int sink) = 0;
+};
+
 #endif

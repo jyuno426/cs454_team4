@@ -2,7 +2,13 @@
 #include "edmondsKarp.h"
 
 /* -------- EdmondsKarp -------- */
-EdmondsKarp::EdmondsKarp(Indiv *indiv, int _V) {
+EdmondsKarp::EdmondsKarp() {
+	initialized = false;
+}
+
+void EdmondsKarp::init(Indiv *indiv, int _V) {
+	initialized = true;
+
 	V = _V;
 	graph.resize(V);
 	pred.resize(V);
@@ -79,6 +85,7 @@ int EdmondsKarp::dfs(int src, int sink) {
 }
 
 long long EdmondsKarp::match(int src, int sink) {
+	assert(initialized);
 	edgeCount = 0;
 	long long totalFlow = 0;
 	while(bfs(src, sink)) {

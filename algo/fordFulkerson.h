@@ -4,15 +4,17 @@
 #include "../utils.h"
 #include "../genetic.h"
 
-class FordFulkerson {
+class FordFulkerson : public Algo {
 private:
 	vector<vector<Edge>> graph;
 	vector<int> pred;
 	int V;
 	int edgeCount;
+    int dfs(int x, int sink, int f);
+    bool initialized;
 public:
-	FordFulkerson(Indiv *, int);
-	int dfs(int, int, int);
-	long long match(int, int);
+    FordFulkerson();
+    void init(Indiv *indiv, int _V);
+	long long match(int src, int sink);
 };
 #endif

@@ -104,7 +104,11 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 
 		puts("GA");
 		// GA over same size
-		next = GA(next, GA_Tries);
+
+		if(i == steps)
+			next = GA(next, (fitnessLimit - fitnessCount) / populationSize);
+		else
+			next = GA(next, GA_Tries);
 
 		delete cur;
 		cur = next;
