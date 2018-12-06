@@ -12,6 +12,7 @@ using namespace std;
 extern int fitnessCount;
 
 bool log_mode = false;
+const bool debug_mode = false;
 char log_path[100] = "res/default_log.csv";
 
 void startLog(const char *path) {
@@ -69,7 +70,7 @@ Generation *GA(Generation *cur, int steps) {
 		cur = next;
 		
 		writeLog(cur->max_fitness());
-		printf("fitness: %lld, %d step(s) left\n", cur->max_fitness(), steps);
+		if(debug_mode) printf("fitness: %lld, %d step(s) left\n", cur->max_fitness(), steps);
 	}
 
 	cur->sort();
@@ -117,9 +118,11 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 		
 		TT_cur.E += E_change;
 		
-		//printf("V_cur: %d\n", TT_cur.V);
-		//printf("E_cur: %d\n", TT_cur.E);
-
+		if(debug_mode){
+			printf("V_cur: %d\n", TT_cur.V);
+			printf("E_cur: %d\n", TT_cur.E);
+		}
+		
 		Generation *next = new Generation(TT_cur);
 
 		// sizeManipulation
@@ -149,7 +152,7 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 		// Since SM_Tries generation has passed, write log SM_Tries times.
 		for(j = 0; j < SM_Tries; j++)
 			writeLog(next->max_fitness());
-		printf("after sizeManipulation: %lld\n", next->max_fitness());
+		if(debug_mode) printf("after sizeManipulation: %lld\n", next->max_fitness());
 
 		// GA over same size
 		if(i == steps)
@@ -242,18 +245,18 @@ void exp1() {
 
 void exp2() {
 	puts("start exp2");
-	const int fitnessLimit = 20000;
-	const TestType DN1 = { DINIC, AC, SPC, 100, 5000, 10000 };
-	const TestType DN2 = { DINIC, AC, SPC, 200, 20000, 10000 };
-	const TestType EC1 = { EC, AC, SPC, 100, 5000, 10000 };
-	const TestType EC2 = { EC, AC, SPC, 200, 20000, 10000 };
+	const int fitnessLimit = 250000;
+	const TestType DN1 = { DINIC, AC, SPC, 20, 200, 10000 };
+	const TestType DN2 = { DINIC, AC, SPC, 40, 800, 10000 };
+	const TestType EC1 = { EC, AC, SPC, 20, 200, 10000 };
+	const TestType EC2 = { EC, AC, SPC, 40, 800, 10000 };
 
 	clock_t s, e;
 	double duration;
 
 	startLog("res/dinic_small.csv");
 	s = clock();
-	Generation *res_dinic1 = originalGA(DN1, fitnessLimit);
+	Generation *res_dinic1 = originalGA(DN1, fitnessLimit + fitnessLimit);
 	e = clock();
 	res_dinic1->dump("res/dinic_small.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
@@ -265,7 +268,7 @@ void exp2() {
 	Generation *res_dinic2 = sizeFlexibleGA(res_dinic1, DN2, fitnessLimit);
 	Generation *res_dinic3 = GA(res_dinic2, fitnessLimit / 100);
 	e = clock();
-	res_dinic2->dump("res/dinic_sf1.dump");
+	res_dinic3->dump("res/dinic_sf1.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Dinic (size flexible): time: %f sec, max fitness: %lld\n", duration, res_dinic3->max_fitness());
 	endLog();
@@ -295,7 +298,7 @@ void exp2() {
 	Generation *res_ec2 = sizeFlexibleGA(res_ec1, EC2, fitnessLimit);
 	Generation *res_ec3 = GA(res_ec2, fitnessLimit / 100);
 	e = clock();
-	res_ec2->dump("res/ec_sf.dump");
+	res_ec3->dump("res/ec_sf.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
 	printf("Edmond-Karp (size flexible): time: %f sec, max fitness: %lld\n", duration, res_ec3->max_fitness());
 	endLog();
@@ -317,6 +320,6 @@ int main() {
 	util_init();
 
 	//exp1();
-	//exp2();
+	exp2();
 	return 0;
 }
