@@ -114,7 +114,8 @@ Generation *sizeFlexibleGA(Generation *from, const TestType TT_to, const int fit
 		
 		// Equalize proportion
 		// i.e., (TT_cur.V * TT_cur.V / TT_cur.E) == (TT_to.V * TT_to.V / TT_to.E)
-		int E_change = TT_cur.V * TT_cur.V * TT_to.E / (TT_to.V * TT_to.V) - TT_cur.E;
+		long long E_change_ll = (long long)TT_cur.V * (long long)TT_cur.V * (long long)TT_to.E / (long long)(TT_to.V * TT_to.V) - (long long)TT_cur.E;
+		int E_change = (int)E_change_ll;
 		
 		TT_cur.E += E_change;
 		
@@ -245,7 +246,7 @@ void exp1() {
 
 void exp2() {
 	puts("start exp2");
-	const int fitnessLimit = 250000;
+	const int fitnessLimit = 500000;
 	const TestType DN1 = { DINIC, AC, SPC, 20, 200, 10000 };
 	const TestType DN2 = { DINIC, AC, SPC, 40, 800, 10000 };
 	const TestType EC1 = { EC, AC, SPC, 20, 200, 10000 };
@@ -256,7 +257,7 @@ void exp2() {
 
 	startLog("res/dinic_small.csv");
 	s = clock();
-	Generation *res_dinic1 = originalGA(DN1, fitnessLimit + fitnessLimit);
+	Generation *res_dinic1 = originalGA(DN1, fitnessLimit);
 	e = clock();
 	res_dinic1->dump("res/dinic_small.dump");
 	duration = (double)(e - s) / CLOCKS_PER_SEC;
