@@ -320,7 +320,7 @@ void exp2() {
 int main() {
 	util_init();
 
-	//exp1();
+	exp1();
 	exp2();
 	return 0;
 }

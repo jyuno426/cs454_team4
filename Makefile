@@ -105,7 +105,7 @@ check:
 
 .PHONY: help
 help:
-	@echo available targets: all dist clean distclean install uninstall check
+	@echo available targets: all dist clean distclean install uninstall check debug release
 
 $(BIN): $(OBJS)
 	$(LINK.o) $^
