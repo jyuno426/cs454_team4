@@ -178,69 +178,69 @@ void exp1() {
 	const int smallSize = 20;
 	const int bigSize = 40;
 	const int fitnessLimit = 500000;
-	const bool generateSmallData = false;
 	Generation *res;
 	
 	/* ----------------------------------------------- */
 	
-	if (generateSmallData) {
-		const TestType TT_small = { DINIC, AC, SPC, smallSize, square(smallSize) / 2, maxCapacity };
+	const TestType TT_small = { DINIC, AC, SPC, smallSize, square(smallSize) / 2, maxCapacity };
+	
+	long long max_fit = -1;
+	for(int i = 1; i <= 10; i++) {
+		printf("start small %d\n", i);
 		
-		long long max_fit = -1;
-		for(int i = 1; i <= 10; i++) {
-			printf("start small %d\n", i);
-			
-			sprintf(path, "res/small-%d.csv", i);
-			startLog(path);
-			
-			res = new Generation(TT_small);
-			res->randomCreation();
-			res = originalGA(TT_small, 100000);
-			
-			printf("small-%d complete: %lld\n", i, res->max_fitness());
-			
-			sprintf(path, "res/smallMax-%d.dump", smallSize);
-			if (i == 1 || max_fit < res->max_fitness()) {
-				max_fit = res->max_fitness();
-				res->dump(path);
-			}
-			endLog();
-			
-			delete res;
-
-			printf("end small %d\n", i);
-		}
-	}
-	else {
-		const TestType TT_big = { DINIC, AC, SPC, bigSize, square(bigSize) / 2, maxCapacity };
-		
-		sprintf(path, "res/big-%d.csv", bigSize);
+		sprintf(path, "res/small-%d.csv", i);
 		startLog(path);
-		res = originalGA(TT_big, 2 * fitnessLimit);
-		sprintf(path, "res/big-%d.dump", bigSize);
-		res->dump(path);
-		endLog();
 		
-		printf("big complete: %lld\n", res->max_fitness());
+		res = new Generation(TT_small);
+		res->randomCreation();
+		res = originalGA(TT_small, 100000);
 		
-		delete res;
+		printf("small-%d complete: %lld\n", i, res->max_fitness());
 		
-		Generation *smallMax = new Generation();
 		sprintf(path, "res/smallMax-%d.dump", smallSize);
-		smallMax->load(path);
-		
-		sprintf(path, "res/smallToBig-%d-%d.csv", smallSize, bigSize);
-		startLog(path);
-		res = sizeFlexibleGA(smallMax, TT_big, fitnessLimit);
-		res = GA(res, fitnessLimit / populationSize);
-		sprintf(path, "res/smallToBig-%d-%d.dump", smallSize, bigSize);
-		res->dump(path);
+		if (i == 1 || max_fit < res->max_fitness()) {
+			max_fit = res->max_fitness();
+			res->dump(path);
+		}
 		endLog();
 		
-		printf("smallToBig complete: %lld\n", res->max_fitness());
-		
 		delete res;
+
+		printf("end small %d\n", i);
 	}
+
+	printf("start big\n");
+	
+	const TestType TT_big = { DINIC, AC, SPC, bigSize, square(bigSize) / 2, maxCapacity };
+	
+	sprintf(path, "res/big-%d.csv", bigSize);
+	startLog(path);
+	res = originalGA(TT_big, 2 * fitnessLimit);
+	sprintf(path, "res/big-%d.dump", bigSize);
+	res->dump(path);
+	endLog();
+	
+	printf("big complete: %lld\n", res->max_fitness());
+	
+	delete res;
+	
+	printf("start smallToBig\n");
+	
+	Generation *smallMax = new Generation();
+	sprintf(path, "res/smallMax-%d.dump", smallSize);
+	smallMax->load(path);
+	
+	sprintf(path, "res/smallToBig-%d-%d.csv", smallSize, bigSize);
+	startLog(path);
+	res = sizeFlexibleGA(smallMax, TT_big, fitnessLimit);
+	res = GA(res, fitnessLimit / populationSize);
+	sprintf(path, "res/smallToBig-%d-%d.dump", smallSize, bigSize);
+	res->dump(path);
+	endLog();
+	
+	printf("smallToBig complete: %lld\n", res->max_fitness());
+	
+	delete res;
 }
 
 
